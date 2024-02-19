@@ -1,41 +1,59 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:monitoring_hidroponik_flutter/views/template_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/nutrisi_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/panen_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/ph_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/ppm_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/suhu_view.dart';
+import 'package:url_strategy/url_strategy.dart';
+import 'firebase_options.dart';
+
+import './views/nutrisi_view.dart';
+import './views/panen_view.dart';
+import './views/ph_view.dart';
+import './views/ppm_view.dart';
+import './views/suhu_view.dart';
+import './views/template_view.dart';
 
 final GoRouter _router = GoRouter(
   initialLocation: '/',
+  debugLogDiagnostics: true,
+  errorBuilder: (context, state) {
+    WidgetsBinding.instance
+        .addPostFrameCallback((timeStamp) => _router.goNamed('main'));
+    return const SizedBox.shrink();
+  },
   routes: [
     GoRoute(
         path: '/',
-        name: 'main',
+        name: 'home',
         builder: (context, state) => const TemplateView()),
     GoRoute(
-        path: '/nutrisi',
-        name: 'nutrisi',
-        builder: (context, state) => const NutrisiView()),
+      path: '/ph/:node',
+      name: 'ph',
+      builder: (context, state) => PhView(
+        node: state.pathParameters['node']!,
+      ),
+    ),
     GoRoute(
-        path: '/panen',
-        name: 'panen',
-        builder: (context, state) => const PanenView()),
+      path: '/ppm/:node',
+      name: 'ppm',
+      builder: (context, state) => PpmView(
+        node: state.pathParameters['node']!,
+      ),
+    ),
     GoRoute(
-        path: '/ph', name: 'ph', builder: (context, state) => const PhView()),
-    GoRoute(
-        path: '/ppm',
-        name: 'ppm',
-        builder: (context, state) => const PpmView()),
-    GoRoute(
-        path: '/suhu',
-        name: 'suhu',
-        builder: (context, state) => const SuhuView()),
+      path: '/suhu/:node',
+      name: 'suhu',
+      builder: (context, state) => SuhuView(
+        node: state.pathParameters['node']!,
+      ),
+    ),
   ],
 );
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  setPathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -45,6 +63,7 @@ final class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Sistem Monitoring Hidroponik',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),

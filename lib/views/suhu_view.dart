@@ -1,69 +1,32 @@
-import 'package:fl_chart/fl_chart.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../widgets/graph.dart';
 
 class SuhuView extends StatelessWidget {
-  const SuhuView({super.key});
+  final String node;
+
+  const SuhuView({super.key, required this.node});
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    const page = 'Suhu (\u00B0C)';
+    final ref = FirebaseDatabase.instance.ref('$node/suhu/status').once();
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Suhu Air',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-            const Text('25.1 \u00B0C',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-            AspectRatio(
-              aspectRatio: 4,
-              child: LineChart(
-                LineChartData(
-                  lineBarsData: [
-                    LineChartBarData(
-                        spots: [
-                          const FlSpot(0, 25.1),
-                          const FlSpot(1, 25.2),
-                          const FlSpot(2, 25.3),
-                          const FlSpot(3, 25.4),
-                          const FlSpot(4, 25.5),
-                          const FlSpot(5, 25.6),
-                          const FlSpot(6, 25.7),
-                          const FlSpot(7, 25.8),
-                          const FlSpot(8, 25.9),
-                          const FlSpot(9, 26.0),
-                          const FlSpot(10, 26.1),
-                          const FlSpot(11, 26.2),
-                          const FlSpot(12, 26.3),
-                        ],
-                        color: theme.primaryColor,
-                        isCurved: false,
-                        dotData: const FlDotData(show: false)),
-                  ],
-                  titlesData: const FlTitlesData(
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    leftTitles: AxisTitles(
-                      axisNameWidget: Text('Suhu (\u00B0C)'),
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                    bottomTitles: AxisTitles(
-                      axisNameWidget: Text('Jam'),
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                  ),
-                  minY: 0,
-                ),
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              context.goNamed('home');
+            },
+          ),
+          title: Text('Kadar PPM $node'),
+          backgroundColor: theme.primaryColor),
+      body: SingleChildScrollView(
+        child: Graph(page: page, title: 'Suhu Air $node', ref: ref),
       ),
     );
   }

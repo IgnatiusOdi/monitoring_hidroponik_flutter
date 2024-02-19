@@ -1,69 +1,32 @@
-import 'package:fl_chart/fl_chart.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../widgets/graph.dart';
 
 class PhView extends StatelessWidget {
-  const PhView({super.key});
+  final String node;
+
+  const PhView({super.key, required this.node});
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    const page = 'PPM';
+    final ref = FirebaseDatabase.instance.ref('$node/ph/status').once();
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('pH Air',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-            const Text('6,0',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-            AspectRatio(
-              aspectRatio: 4,
-              child: LineChart(
-                LineChartData(
-                  lineBarsData: [
-                    LineChartBarData(
-                        spots: [
-                          const FlSpot(0, 6.0),
-                          const FlSpot(1, 6.0),
-                          const FlSpot(2, 6.0),
-                          const FlSpot(3, 6.0),
-                          const FlSpot(4, 6.0),
-                          const FlSpot(5, 6.0),
-                          const FlSpot(6, 6.0),
-                          const FlSpot(7, 6.0),
-                          const FlSpot(8, 6.0),
-                          const FlSpot(9, 6.0),
-                          const FlSpot(10, 6.0),
-                          const FlSpot(11, 6.0),
-                          const FlSpot(12, 6.0),
-                        ],
-                        color: theme.primaryColor,
-                        isCurved: false,
-                        dotData: const FlDotData(show: false)),
-                  ],
-                  titlesData: const FlTitlesData(
-                    topTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    leftTitles: AxisTitles(
-                      axisNameWidget: Text('Suhu (C)'),
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                    bottomTitles: AxisTitles(
-                      axisNameWidget: Text('Jam'),
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                  ),
-                  minY: 0,
-                ),
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              context.goNamed('home');
+            },
+          ),
+          title: Text('Kadar PPM $node'),
+          backgroundColor: theme.primaryColor),
+      body: SingleChildScrollView(
+        child: Graph(page: page, title: 'pH Air $node', ref: ref),
       ),
     );
   }

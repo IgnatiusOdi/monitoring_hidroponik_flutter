@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:monitoring_hidroponik_flutter/views/home_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/nutrisi_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/panen_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/ph_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/ppm_view.dart';
-import 'package:monitoring_hidroponik_flutter/views/suhu_view.dart';
+
+import 'home_view.dart';
+import 'nutrisi_view.dart';
+import 'panen_view.dart';
+import 'settings_view.dart';
 
 class TemplateView extends StatefulWidget {
   const TemplateView({super.key});
@@ -19,9 +18,7 @@ class _TemplateViewState extends State<TemplateView> {
     const HomeView(),
     const NutrisiView(),
     const PanenView(),
-    const PhView(),
-    const PpmView(),
-    const SuhuView()
+    const SettingsView(),
   ];
 
   void _onItemTapped(int index) {
@@ -45,14 +42,14 @@ class _TemplateViewState extends State<TemplateView> {
         onTap: _onItemTapped,
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.colorScheme.secondary,
-        type: BottomNavigationBarType.fixed,
+        type: BottomNavigationBarType.shifting,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Nutrisi'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Panen'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PH'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'PPM'),
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Suhu'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.water_drop), label: 'Nutrisi'),
+          BottomNavigationBarItem(icon: Icon(Icons.compost), label: 'Panen'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

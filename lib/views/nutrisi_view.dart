@@ -1,36 +1,27 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/nutrisi.dart';
 
 class NutrisiView extends StatelessWidget {
   const NutrisiView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final ref1 = FirebaseDatabase.instance.ref('node1/nutrisi');
+    final ref2 = FirebaseDatabase.instance.ref('node2/nutrisi');
 
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Nutrisi Terakhir Ditambahkan :',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-            const Text('3 HARI yang lalu',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-            ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(60),
-                  backgroundColor: theme.primaryColor,
-                  foregroundColor:
-                      theme.colorScheme.onPrimary, // <-- Splash color
-                ),
-                child: const Text(
-                  'TAMBAH\nNUTRISI',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                )),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Nutrisi(title: r'Node 1', ref: ref1),
+              const Divider(),
+              Nutrisi(title: r'Node 2', ref: ref2),
+            ],
+          ),
         ),
       ),
     );

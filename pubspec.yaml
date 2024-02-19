@@ -1,7 +1,6 @@
 name: monitoring_hidroponik_flutter
 description: 'TA Sistem Monitoring Instalasi Hidroponik menggunakan LoRaWAN dan Framework Flutter'
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -10,10 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  go_router: ^13.0.0
-  fl_chart: ^0.66.0
-
-  cupertino_icons: ^1.0.2
+  cloud_firestore: ^4.15.0
+  #  cupertino_icons: ^1.0.2
+  firebase_core: ^2.25.1
+  firebase_database: ^10.4.1
+  fl_chart: ^0.66.1
+  go_router: ^13.1.0
+  url_strategy: ^0.2.0
 
 dev_dependencies:
   flutter_test:
