@@ -13,7 +13,7 @@ class SuhuView extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     const page = 'Suhu (\u00B0C)';
-    final ref = FirebaseDatabase.instance.ref('$node/suhu/status').once();
+    final ref = FirebaseDatabase.instance.ref('$node/suhu').once();
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +23,7 @@ class SuhuView extends StatelessWidget {
               context.goNamed('home');
             },
           ),
-          title: Text('Kadar PPM $node'),
+          title: Text('Suhu $node'),
           backgroundColor: theme.primaryColor),
       body: SingleChildScrollView(
         child: Graph(page: page, title: 'Suhu Air $node', ref: ref),

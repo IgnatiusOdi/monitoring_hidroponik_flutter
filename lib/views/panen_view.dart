@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../model/tanaman.dart';
 import '../widgets/panen.dart';
 
 class PanenView extends StatelessWidget {
@@ -8,116 +9,86 @@ class PanenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ref1 = FirebaseDatabase.instance.ref('node1/panen').once();
-    final ref2 = FirebaseDatabase.instance.ref('node2/panen').once();
+    final width = MediaQuery.of(context).size.width;
+    final ref1 = FirebaseDatabase.instance.ref('node1/tanaman');
+    final ref2 = FirebaseDatabase.instance.ref('node2/tanaman');
 
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(r'Perkiraan Waktu Panen',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Panen(title: r'Node 1', ref: ref1),
-                  Panen(title: r'Node 2', ref: ref2),
-                ],
-              ),
-              const Divider(),
-              Table(
-                border: TableBorder.all(),
-                children: const [
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              r'Perkiraan Waktu Panen',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+            ),
+            const Divider(),
+            width > 475
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Panen(title: r'node1', ref: ref1),
+                      Panen(title: r'node2', ref: ref2),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Panen(title: r'node1', ref: ref1),
+                      Panen(title: r'node2', ref: ref2),
+                    ],
+                  ),
+            const Divider(),
+            Table(
+              border: TableBorder.all(),
+              children: [
+                const TableRow(
+                  children: [
+                    TableCell(
+                        child: Text(
+                      r'TANAMAN',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    )),
+                    TableCell(
+                        child: Text(
+                      r'PPM',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    )),
+                    TableCell(
+                        child: Text(
+                      r'WAKTU PANEN',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ))
+                  ],
+                ),
+                for (var tanaman in Tanaman.values)
                   TableRow(
                     children: [
                       TableCell(
-                          child: Text(r'TANAMAN',
+                          child: Text(
+                              '${tanaman.nama.characters.first.toUpperCase()}${tanaman.nama.characters.skip(1)}',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20))),
+                              style: const TextStyle(fontSize: 16))),
                       TableCell(
-                          child: Text(r'PPM',
+                          child: Text('${tanaman.ppmMin} - ${tanaman.ppmMax}',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20))),
+                              style: const TextStyle(fontSize: 16))),
                       TableCell(
-                          child: Text(r'WAKTU PANEN',
+                          child: Text(
+                              '${tanaman.panen1} - ${tanaman.panen2} hari',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20)))
+                              style: const TextStyle(fontSize: 16)))
                     ],
                   ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                          child: Text(r'Selada',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'560 - 840',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'30 - 40 hari',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20)))
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                          child: Text(r'Kangkung',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'1050 - 1400',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'21 - 25 hari',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20)))
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                          child: Text(r'Sawi',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'1050 - 1400',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'25 - 30 hari',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20)))
-                    ],
-                  ),
-                  TableRow(
-                    children: [
-                      TableCell(
-                          child: Text(r'Pakcoy',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'1050 - 1400',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20))),
-                      TableCell(
-                          child: Text(r'40 - 45 hari',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 20)))
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

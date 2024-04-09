@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'firebase_options.dart';
 
-import './views/nutrisi_view.dart';
-import './views/panen_view.dart';
 import './views/ph_view.dart';
 import './views/ppm_view.dart';
 import './views/suhu_view.dart';

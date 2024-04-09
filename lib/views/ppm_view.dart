@@ -13,7 +13,7 @@ class PpmView extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     const page = 'PPM';
-    final ref = FirebaseDatabase.instance.ref('$node/ppm/status').once();
+    final ref = FirebaseDatabase.instance.ref('$node/ppm').once();
 
     return Scaffold(
       appBar: AppBar(

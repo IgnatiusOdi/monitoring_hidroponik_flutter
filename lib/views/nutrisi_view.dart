@@ -8,19 +8,22 @@ class NutrisiView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ref1 = FirebaseDatabase.instance.ref('node1/nutrisi');
-    final ref2 = FirebaseDatabase.instance.ref('node2/nutrisi');
+    final ref1 = FirebaseDatabase.instance.ref('node1');
+    final ref2 = FirebaseDatabase.instance.ref('node2');
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Nutrisi(title: r'Node 1', ref: ref1),
-              const Divider(),
-              Nutrisi(title: r'Node 2', ref: ref2),
-            ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Nutrisi(title: r'node1', ref: ref1),
+                const Divider(),
+                Nutrisi(title: r'node2', ref: ref2),
+              ],
+            ),
           ),
         ),
       ),

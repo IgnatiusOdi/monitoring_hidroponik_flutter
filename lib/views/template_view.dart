@@ -13,7 +13,7 @@ class TemplateView extends StatefulWidget {
 }
 
 class _TemplateViewState extends State<TemplateView> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
   final List<Widget> _pages = [
     const HomeView(),
     const NutrisiView(),
@@ -48,8 +48,7 @@ class _TemplateViewState extends State<TemplateView> {
           BottomNavigationBarItem(
               icon: Icon(Icons.water_drop), label: 'Nutrisi'),
           BottomNavigationBarItem(icon: Icon(Icons.compost), label: 'Panen'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: 'Settings'),
+          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Tambah'),
         ],
       ),
     );

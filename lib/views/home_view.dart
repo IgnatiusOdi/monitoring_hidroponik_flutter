@@ -8,56 +8,24 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final double width = MediaQuery.of(context).size.width;
-    final double height = MediaQuery.of(context).size.height;
-
-    final ref1 = FirebaseDatabase.instance.ref('node1/status').once();
-    final ref2 = FirebaseDatabase.instance.ref('node2/status').once();
+    final ref1 = FirebaseDatabase.instance.ref('node1');
+    final ref2 = FirebaseDatabase.instance.ref('node2');
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Card(
-              color: theme.colorScheme.primaryContainer,
-              child: SizedBox(
-                width: width,
-                height: 200,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'NOTIFIKASI',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                      Card(
-                        color: Colors.redAccent,
-                        child: SizedBox(
-                          width: width,
-                          height: 40,
-                          child: const Text('AIR MELEWATI BATAS SENSOR!'),
-                        ),
-                      ),
-                      Card(
-                        color: Colors.yellowAccent,
-                        child: SizedBox(
-                          width: width,
-                          height: 40,
-                          child: const Text('SUHU AIR MELEWATI BATAS!'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Text(
+                'STATUS',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
-            ),
-            Status(node: 'node1', ref: ref1),
-            Status(node: 'node2', ref: ref2),
-          ],
+              const Divider(),
+              Status(node: 'node1', ref: ref1),
+              Status(node: 'node2', ref: ref2),
+            ],
+          ),
         ),
       ),
     );
