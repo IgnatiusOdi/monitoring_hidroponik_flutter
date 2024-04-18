@@ -4,16 +4,21 @@ import 'package:go_router/go_router.dart';
 
 import '../widgets/graph.dart';
 
-class SuhuView extends StatelessWidget {
+class GraphView extends StatelessWidget {
+  final String page;
   final String node;
 
-  const SuhuView({super.key, required this.node});
+  const GraphView({super.key, required this.page, required this.node});
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    const page = 'Suhu (\u00B0C)';
     final ref = FirebaseDatabase.instance.ref(node);
+    String title = page == 'ph'
+        ? 'pH Air $node'
+        : page == 'ppm'
+            ? 'Kadar PPM $node'
+            : 'Suhu Air $node';
 
     return Scaffold(
       appBar: AppBar(
@@ -23,12 +28,12 @@ class SuhuView extends StatelessWidget {
               context.goNamed('home');
             },
           ),
-          title: Text('Suhu $node'),
+          title: Text(title),
           backgroundColor: theme.primaryColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Graph(page: page, title: 'Suhu Air $node', ref: ref),
+          child: Graph(page: page, title: title, ref: ref),
         ),
       ),
     );

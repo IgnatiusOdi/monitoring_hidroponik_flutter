@@ -40,19 +40,18 @@ class Status extends StatelessWidget {
                     decoration: TextDecoration.underline)),
             Row(
               children: [
-                const Text('Status: ', style: TextStyle(fontSize: 24)),
+                const Text('Ketinggian Air: ', style: TextStyle(fontSize: 24)),
                 Container(
                   width: 20,
                   height: 20,
                   margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                      color: data.status == true
-                          ? theme.primaryColor
-                          : Colors.grey,
+                      color:
+                          data.tinggiAir == 1 ? theme.primaryColor : Colors.red,
                       shape: BoxShape.circle),
                 ),
                 Text(
-                  data.status == true ? 'ON' : 'OFF',
+                  data.tinggiAir == 1 ? 'OK' : 'Warning!',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 24),
                 ),
@@ -148,7 +147,10 @@ class StatusCard extends StatelessWidget {
       child: InkWell(
         splashColor: Colors.blue.withAlpha(30),
         onTap: () {
-          context.goNamed(page, pathParameters: {'node': node});
+          context.goNamed(
+            'graph',
+            pathParameters: {'page': page, 'node': node},
+          );
         },
         child: SizedBox(
           width: 150,

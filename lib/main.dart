@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'firebase_options.dart';
 
-import './api/firebase_api.dart';
-import './views/ph_view.dart';
-import './views/ppm_view.dart';
-import './views/suhu_view.dart';
+import './views/graph_view.dart';
 import './views/template_view.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -27,23 +24,10 @@ final GoRouter _router = GoRouter(
         name: 'home',
         builder: (context, state) => const TemplateView()),
     GoRoute(
-      path: '/ph/:node',
-      name: 'ph',
-      builder: (context, state) => PhView(
-        node: state.pathParameters['node']!,
-      ),
-    ),
-    GoRoute(
-      path: '/ppm/:node',
-      name: 'ppm',
-      builder: (context, state) => PpmView(
-        node: state.pathParameters['node']!,
-      ),
-    ),
-    GoRoute(
-      path: '/suhu/:node',
-      name: 'suhu',
-      builder: (context, state) => SuhuView(
+      path: '/:page/:node',
+      name: 'graph',
+      builder: (context, state) => GraphView(
+        page: state.pathParameters['page']!,
         node: state.pathParameters['node']!,
       ),
     ),
@@ -53,7 +37,6 @@ final GoRouter _router = GoRouter(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseApi().initNotifications();
   setPathUrlStrategy();
   runApp(const MyApp());
 }
