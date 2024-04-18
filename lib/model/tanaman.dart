@@ -1,4 +1,4 @@
-enum Tanaman { selada, kangkung, sawi, pakcoy }
+enum Tanaman { selada, kemangi }
 
 class TanamanData {
   int? interval;
@@ -32,12 +32,8 @@ extension TanamanExtension on Tanaman {
     switch (this) {
       case Tanaman.selada:
         return 30;
-      case Tanaman.kangkung:
-        return 21;
-      case Tanaman.sawi:
-        return 25;
-      case Tanaman.pakcoy:
-        return 40;
+      case Tanaman.kemangi:
+        return 120;
     }
   }
 
@@ -45,12 +41,8 @@ extension TanamanExtension on Tanaman {
     switch (this) {
       case Tanaman.selada:
         return 40;
-      case Tanaman.kangkung:
-        return 25;
-      case Tanaman.sawi:
-        return 30;
-      case Tanaman.pakcoy:
-        return 45;
+      case Tanaman.kemangi:
+        return 150;
     }
   }
 
@@ -59,7 +51,7 @@ extension TanamanExtension on Tanaman {
       case Tanaman.selada:
         return 840;
       default:
-        return 1400;
+        return 1120;
     }
   }
 
@@ -68,7 +60,7 @@ extension TanamanExtension on Tanaman {
       case Tanaman.selada:
         return 560;
       default:
-        return 1050;
+        return 700;
     }
   }
 }

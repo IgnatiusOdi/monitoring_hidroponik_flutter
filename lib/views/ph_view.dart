@@ -13,7 +13,7 @@ class PhView extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     const page = 'pH';
-    final ref = FirebaseDatabase.instance.ref('$node/ph').once();
+    final ref = FirebaseDatabase.instance.ref(node);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,8 +25,11 @@ class PhView extends StatelessWidget {
           ),
           title: Text('pH $node'),
           backgroundColor: theme.primaryColor),
-      body: SingleChildScrollView(
-        child: Graph(page: page, title: 'pH Air $node', ref: ref),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Graph(page: page, title: 'pH Air $node', ref: ref),
+        ),
       ),
     );
   }

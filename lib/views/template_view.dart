@@ -13,7 +13,7 @@ class TemplateView extends StatefulWidget {
 }
 
 class _TemplateViewState extends State<TemplateView> {
-  int _selectedIndex = 3;
+  int _selectedIndex = 0;
   final List<Widget> _pages = [
     const HomeView(),
     const NutrisiView(),

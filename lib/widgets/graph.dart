@@ -1,6 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+import '../model/data.dart';
+import '../model/graph_data.dart';
 
 class Graph extends StatelessWidget {
   // pH Air, Kadar PPM, Suhu Air
@@ -10,7 +13,7 @@ class Graph extends StatelessWidget {
   final String page;
 
   // DatabaseReference
-  final Future<DatabaseEvent> ref;
+  final DatabaseReference ref;
 
   const Graph({
     super.key,
@@ -21,83 +24,59 @@ class Graph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return FutureBuilder(
-      future: ref,
+    return StreamBuilder(
+      stream: ref.onValue,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (snapshot.hasData) {
-          var data = snapshot.data!.snapshot.value;
-
-          List<FlSpot> spots = [
-            const FlSpot(1, 1),
-          ];
-
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
-              Text(
-                '$data \u00B0C',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
-              ),
-              const Divider(),
-              //     Padding(
-              //       padding: const EdgeInsets.all(16.0),
-              //       child: AspectRatio(
-              //         aspectRatio: 5,
-              //         child: LineChart(
-              //           LineChartData(
-              //             lineBarsData: [
-              //               LineChartBarData(
-              //                 spots: spots,
-              //                 color: theme.primaryColor,
-              //                 isCurved: false,
-              //                 dotData: const FlDotData(show: false),
-              //               ),
-              //             ],
-              //             titlesData: FlTitlesData(
-              //               topTitles: const AxisTitles(
-              //                 sideTitles: SideTitles(showTitles: false),
-              //               ),
-              //               rightTitles: const AxisTitles(
-              //                 sideTitles:
-              //                     SideTitles(showTitles: false, reservedSize: 30),
-              //               ),
-              //               leftTitles: AxisTitles(
-              //                 axisNameWidget: Text(page),
-              //                 sideTitles: const SideTitles(
-              //                   showTitles: true,
-              //                   reservedSize: 30,
-              //                 ),
-              //               ),
-              //               bottomTitles: const AxisTitles(
-              //                 axisNameWidget: Text('Jam'),
-              //                 sideTitles: SideTitles(
-              //                   showTitles: true,
-              //                   interval: 1,
-              //                   reservedSize: 30,
-              //                 ),
-              //               ),
-              //             ),
-              //             minY: 0,
-              //           ),
-              //         ),
-              //       ),
-              //     ),
-            ],
-          );
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
-        return const Center(child: Text('Error'));
+        var data = Data.fromJson(
+            snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+            ),
+            Text(
+              page == 'pH'
+                  ? '${data.ph}'
+                  : page == 'PPM'
+                      ? '${data.ppm}'
+                      : '${data.suhu} \u00B0C',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: AspectRatio(
+                  aspectRatio: 5,
+                  child: SfCartesianChart(
+                    primaryXAxis: const DateTimeAxis(),
+                    title: ChartTitle(text: 'Grafik $page'),
+                    series: <LineSeries<GraphData, dynamic>>[
+                      LineSeries(
+                        dataSource: data.data,
+                        xValueMapper: (GraphData data, _) => data.tanggal,
+                        yValueMapper: (GraphData data, _) => page == 'pH'
+                            ? double.parse(data.value!.split(',')[0])
+                            : page == 'PPM'
+                                ? double.parse(data.value!.split(',')[1])
+                                : double.parse(data.value!.split(',')[2]),
+                        dataLabelSettings:
+                            const DataLabelSettings(isVisible: true),
+                      ),
+                    ],
+                  )),
+            ),
+          ],
+        );
       },
     );
   }

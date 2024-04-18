@@ -1,7 +1,9 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/data.dart';
+import 'nutrisi_slider.dart';
 
 class Nutrisi extends StatefulWidget {
   final String title;
@@ -16,11 +18,12 @@ class Nutrisi extends StatefulWidget {
 }
 
 class _NutrisiState extends State<Nutrisi> {
-  double _currentSliderValue = 560;
+  bool success = false;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final double width = MediaQuery.of(context).size.width;
 
     return StreamBuilder(
       stream: widget.ref.onValue,
@@ -52,13 +55,18 @@ class _NutrisiState extends State<Nutrisi> {
             ),
             ElevatedButton(
               onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+
                 await widget.ref.update({
+                  'command': prefs.getDouble(widget.title),
                   'penambahanPPM': DateTime.now().toString().split(' ').first
-                });
+                }).then((_) => setState(() => success = true));
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                padding: const EdgeInsets.all(60),
+                padding: width > 475
+                    ? const EdgeInsets.all(60)
+                    : const EdgeInsets.all(40),
                 backgroundColor: theme.primaryColor,
                 foregroundColor:
                     theme.colorScheme.onPrimary, // <-- Splash color
@@ -69,19 +77,13 @@ class _NutrisiState extends State<Nutrisi> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
-            Text('PPM : ${data.ppm}', style: const TextStyle(fontSize: 24)),
-            Slider(
-              value: _currentSliderValue,
-              min: 560,
-              max: 1400,
-              divisions: 10,
-              label: _currentSliderValue.round().toString(),
-              onChanged: (value) {
-                setState(() {
-                  _currentSliderValue = value;
-                });
-              },
-            )
+            Text('PPM saat ini : ${data.ppm}',
+                style: const TextStyle(fontSize: 24)),
+            success
+                ? Text('Berhasil mengirim perintah',
+                    style: TextStyle(fontSize: 20, color: theme.primaryColor))
+                : Container(),
+            NutrisiSlider(title: widget.title),
           ],
         );
       },

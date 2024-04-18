@@ -16,6 +16,7 @@ class Status extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
 
     return StreamBuilder(
       stream: ref.onValue,
@@ -58,92 +59,18 @@ class Status extends StatelessWidget {
               ],
             ),
             data.status!
-                ? Row(
+                ? GridView.count(
+                    crossAxisCount: width > 475 ? 3 : 2,
+                    childAspectRatio: width / (height / 2),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      Card(
-                        color: theme.colorScheme.primaryContainer,
-                        clipBehavior: Clip.hardEdge,
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          onTap: () {
-                            context
-                                .goNamed('ppm', pathParameters: {'node': node});
-                          },
-                          child: SizedBox(
-                            width: 200,
-                            height: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('PPM',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24)),
-                                Text('${data.ppm}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 32)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Card(
-                        color: theme.colorScheme.primaryContainer,
-                        clipBehavior: Clip.hardEdge,
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          onTap: () {
-                            context
-                                .goNamed('ph', pathParameters: {'node': node});
-                          },
-                          child: SizedBox(
-                            width: 200,
-                            height: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('pH Air',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24)),
-                                Text('${data.ph}',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 32)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Card(
-                        color: theme.colorScheme.primaryContainer,
-                        clipBehavior: Clip.hardEdge,
-                        child: InkWell(
-                          splashColor: Colors.blue.withAlpha(30),
-                          onTap: () {
-                            context.goNamed('suhu',
-                                pathParameters: {'node': node});
-                          },
-                          child: SizedBox(
-                            width: 200,
-                            height: 100,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text('Suhu Air',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 24)),
-                                Text('${data.suhu} \u00B0C',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 32)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      StatusCard(theme.colorScheme.primaryContainer, node, 'ph',
+                          'pH Air', data.ph!),
+                      StatusCard(theme.colorScheme.primaryContainer, node,
+                          'ppm', 'Kadar PPM', data.ppm!),
+                      StatusCard(theme.colorScheme.primaryContainer, node,
+                          'suhu', 'Suhu Air', '${data.suhu} \u00B0C'),
                     ],
                   )
                 : Container(),
@@ -203,9 +130,49 @@ class Status extends StatelessWidget {
   }
 }
 
+class StatusCard extends StatelessWidget {
+  final Color color;
+  final String node;
+  final String page;
+  final String title;
+  final dynamic data;
+
+  const StatusCard(this.color, this.node, this.page, this.title, this.data,
+      {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: color,
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        splashColor: Colors.blue.withAlpha(30),
+        onTap: () {
+          context.goNamed(page, pathParameters: {'node': node});
+        },
+        child: SizedBox(
+          width: 150,
+          height: 100,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(title,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 24)),
+              Text('$data',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 32)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class NotifikasiCard extends StatelessWidget {
   final String message;
-  final Color? color;
+  final Color color;
   final double width;
 
   const NotifikasiCard(this.message, this.color, this.width, {super.key});

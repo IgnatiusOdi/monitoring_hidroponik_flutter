@@ -71,10 +71,13 @@ class PanenView extends StatelessWidget {
                   TableRow(
                     children: [
                       TableCell(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
                               '${tanaman.nama.characters.first.toUpperCase()}${tanaman.nama.characters.skip(1)}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 16))),
+                              style: const TextStyle(fontSize: 16)),
+                        ),
+                      ),
                       TableCell(
                           child: Text('${tanaman.ppmMin} - ${tanaman.ppmMax}',
                               textAlign: TextAlign.center,

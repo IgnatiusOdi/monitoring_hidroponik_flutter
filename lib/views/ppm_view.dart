@@ -13,7 +13,7 @@ class PpmView extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     const page = 'PPM';
-    final ref = FirebaseDatabase.instance.ref('$node/ppm').once();
+    final ref = FirebaseDatabase.instance.ref(node);
 
     return Scaffold(
       appBar: AppBar(
@@ -25,8 +25,11 @@ class PpmView extends StatelessWidget {
           ),
           title: Text('Kadar PPM $node'),
           backgroundColor: theme.primaryColor),
-      body: SingleChildScrollView(
-        child: Graph(page: page, title: 'Kadar PPM $node', ref: ref),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Graph(page: page, title: 'Kadar PPM $node', ref: ref),
+        ),
       ),
     );
   }
