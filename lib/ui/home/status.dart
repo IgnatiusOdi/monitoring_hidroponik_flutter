@@ -1,16 +1,14 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../model/data.dart';
+import '../../models/data.dart';
+import '../../services/realtime_database_service.dart';
 
 class Status extends StatelessWidget {
   final String node;
+  final RealtimeDatabaseService service;
 
-  // DatabaseReference
-  final DatabaseReference ref;
-
-  const Status({super.key, required this.node, required this.ref});
+  const Status({super.key, required this.node, required this.service});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class Status extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
 
     return StreamBuilder(
-      stream: ref.onValue,
+      stream: service.getNode(node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -51,7 +49,7 @@ class Status extends StatelessWidget {
                       shape: BoxShape.circle),
                 ),
                 Text(
-                  data.tinggiAir == 1 ? 'OK' : 'Warning!',
+                  data.tinggiAir == 1 ? 'Aman' : 'Tidak Aman',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 24),
                 ),
@@ -81,42 +79,41 @@ class Status extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Notifikasi',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 24),
-                            ),
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Notifikasi',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 24),
+                              ),
 
-                            // TINGGI AIR
-                            data.tinggiAir == 0
-                                ? NotifikasiCard(
-                                    'Ketinggian Air melewati batas!',
-                                    Colors.redAccent,
-                                    width)
-                                : Container(),
+                              // TINGGI AIR
+                              data.tinggiAir == 0
+                                  ? NotifikasiCard(
+                                      'Ketinggian Air melewati batas!',
+                                      Colors.redAccent,
+                                      width)
+                                  : Container(),
 
-                            // PH
-                            data.ph! < 5.5 || data.ph! > 6.5
-                                ? NotifikasiCard('pH Air melewati batas!',
-                                    Colors.yellowAccent, width)
-                                : Container(),
+                              // PH
+                              data.ph! < 5.5 || data.ph! > 6.5
+                                  ? NotifikasiCard('pH Air melewati batas!',
+                                      Colors.yellowAccent, width)
+                                  : Container(),
 
-                            // PPM
-                            data.ppm! < data.tanaman!.ppmMin!.toInt() ||
-                                    data.ppm! > data.tanaman!.ppmMax!.toInt()
-                                ? NotifikasiCard('Kadar PPM melewati batas!',
-                                    Colors.yellowAccent, width)
-                                : Container(),
+                              // PPM
+                              data.ppm! < data.tanaman!.ppmMin!.toInt() ||
+                                      data.ppm! > data.tanaman!.ppmMax!.toInt()
+                                  ? NotifikasiCard('Kadar PPM melewati batas!',
+                                      Colors.yellowAccent, width)
+                                  : Container(),
 
-                            // SUHU
-                            data.suhu! < 20 || data.suhu! > 25
-                                ? NotifikasiCard('Suhu Air melewati batas!',
-                                    Colors.redAccent, width)
-                                : Container(),
-                          ],
-                        ),
+                              // SUHU
+                              data.suhu! < 20 || data.suhu! > 25
+                                  ? NotifikasiCard('Suhu Air melewati batas!',
+                                      Colors.redAccent, width)
+                                  : Container(),
+                            ]),
                       ),
                     ),
                   )
@@ -155,17 +152,14 @@ class StatusCard extends StatelessWidget {
         child: SizedBox(
           width: 150,
           height: 100,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24)),
-              Text('$data',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 32)),
-            ],
-          ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+            Text('$data',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
+          ]),
         ),
       ),
     );

@@ -1,17 +1,16 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/data.dart';
+import '../../models/data.dart';
+import '../../services/mqtt_service.dart';
+import '../../services/realtime_database_service.dart';
 import 'nutrisi_slider.dart';
 
 class Nutrisi extends StatefulWidget {
-  final String title;
+  final String node;
+  final RealtimeDatabaseService service;
 
-  // DatabaseReference
-  final DatabaseReference ref;
-
-  const Nutrisi({super.key, required this.title, required this.ref});
+  const Nutrisi({super.key, required this.node, required this.service});
 
   @override
   State<Nutrisi> createState() => _NutrisiState();
@@ -26,7 +25,7 @@ class _NutrisiState extends State<Nutrisi> {
     final double width = MediaQuery.of(context).size.width;
 
     return StreamBuilder(
-      stream: widget.ref.onValue,
+      stream: widget.service.getNode(widget.node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -42,7 +41,7 @@ class _NutrisiState extends State<Nutrisi> {
         return Column(
           children: [
             Text(
-              widget.title,
+              widget.node,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
             ),
             const Text(
@@ -56,11 +55,10 @@ class _NutrisiState extends State<Nutrisi> {
             ElevatedButton(
               onPressed: () async {
                 final prefs = await SharedPreferences.getInstance();
-
-                await widget.ref.update({
-                  'command': prefs.getDouble(widget.title),
-                  'penambahanPPM': DateTime.now().toString().split(' ').first
-                }).then((_) => setState(() => success = true));
+                await MqttService()
+                    .publish(
+                        widget.node, prefs.getDouble(widget.node).toString())
+                    .then((_) => setState(() => success = true));
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
@@ -68,8 +66,7 @@ class _NutrisiState extends State<Nutrisi> {
                     ? const EdgeInsets.all(60)
                     : const EdgeInsets.all(40),
                 backgroundColor: theme.primaryColor,
-                foregroundColor:
-                    theme.colorScheme.onPrimary, // <-- Splash color
+                foregroundColor: theme.colorScheme.onPrimary,
               ),
               child: const Text(
                 'TAMBAH\nNUTRISI',
@@ -83,7 +80,7 @@ class _NutrisiState extends State<Nutrisi> {
                 ? Text('Berhasil mengirim perintah',
                     style: TextStyle(fontSize: 20, color: theme.primaryColor))
                 : Container(),
-            NutrisiSlider(title: widget.title),
+            NutrisiSlider(node: widget.node),
           ],
         );
       },

@@ -1,15 +1,16 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../widgets/nutrisi.dart';
+import '../../services/realtime_database_service.dart';
+import 'nutrisi.dart';
 
-class NutrisiView extends StatelessWidget {
-  const NutrisiView({super.key});
+class NutrisiScreen extends StatelessWidget {
+  const NutrisiScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ref1 = FirebaseDatabase.instance.ref('node1');
-    final ref2 = FirebaseDatabase.instance.ref('node2');
+    final service =
+        Provider.of<RealtimeDatabaseService>(context, listen: false);
 
     return Scaffold(
       body: Padding(
@@ -19,9 +20,9 @@ class NutrisiView extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Nutrisi(title: r'node1', ref: ref1),
+                Nutrisi(node: r'node1', service: service),
                 const Divider(),
-                Nutrisi(title: r'node2', ref: ref2),
+                Nutrisi(node: r'node2', service: service),
               ],
             ),
           ),

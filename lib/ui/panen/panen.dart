@@ -1,20 +1,18 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-import '../model/tanaman.dart';
+import '../../models/tanaman.dart';
+import '../../services/realtime_database_service.dart';
 
 class Panen extends StatelessWidget {
-  final String title;
+  final String node;
+  final RealtimeDatabaseService service;
 
-  // DatabaseReference
-  final DatabaseReference ref;
-
-  const Panen({super.key, required this.title, required this.ref});
+  const Panen({super.key, required this.node, required this.service});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: ref.onValue,
+      stream: service.getNode('$node/tanaman'),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -38,7 +36,7 @@ class Panen extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                title,
+                node,
                 style: const TextStyle(fontSize: 24),
               ),
               Text(

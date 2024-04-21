@@ -1,10 +1,10 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../model/data.dart';
-import '../model/graph_data.dart';
+import '../../models/data.dart';
+import '../../models/graph_data.dart';
+import '../../services/realtime_database_service.dart';
 
 class Graph extends StatefulWidget {
   // pH Air, Kadar PPM, Suhu Air
@@ -13,14 +13,15 @@ class Graph extends StatefulWidget {
   // ph, ppm, suhu (\u00B0C)
   final String page;
 
-  // DatabaseReference
-  final DatabaseReference ref;
+  final String node;
+  final RealtimeDatabaseService service;
 
   const Graph({
     super.key,
     required this.page,
     required this.title,
-    required this.ref,
+    required this.node,
+    required this.service,
   });
 
   @override
@@ -29,8 +30,9 @@ class Graph extends StatefulWidget {
 
 class _GraphState extends State<Graph> {
   late ZoomPanBehavior _zoomPanBehavior;
-  final startDateController = TextEditingController();
-  final endDateController = TextEditingController();
+  late TrackballBehavior _trackballBehavior;
+  final tanggalAwalController = TextEditingController();
+  final tanggalAkhirController = TextEditingController();
 
   @override
   void initState() {
@@ -41,12 +43,19 @@ class _GraphState extends State<Graph> {
       zoomMode: ZoomMode.x,
       enablePanning: true,
     );
+    _trackballBehavior = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      lineType: TrackballLineType.vertical,
+      tooltipSettings: const InteractiveTooltip(
+          enable: true, color: Colors.green, format: 'point.x'),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: widget.ref.onValue,
+      stream: widget.service.getNode(widget.node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -75,56 +84,42 @@ class _GraphState extends State<Graph> {
             ),
             const Divider(),
             TextField(
-              controller: startDateController,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.calendar_today),
-                labelText: 'Start Date',
-                hintText: 'yyyy-mm-dd',
-              ),
-              readOnly: true,
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
+                controller: tanggalAwalController,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.calendar_today),
+                  labelText: 'Tanggal Awal',
+                  hintText: 'yyyy-mm-dd',
+                ),
+                readOnly: true,
+                onTap: () {
+                  showDatePicker(
                     context: context,
-                    initialDate: DateTime.now(),
-                    //get today's date
                     firstDate: DateTime(2024),
-                    lastDate: DateTime.now());
-
-                if (pickedDate != null) {
-                  String formattedDate =
-                      DateFormat('yyyy-MM-dd').format(pickedDate);
-
-                  setState(() {
-                    startDateController.text = formattedDate;
-                  });
-                }
-              },
-            ),
-            startDateController.text.isNotEmpty
+                    lastDate: DateTime.now(),
+                  ).then(
+                    (value) => setState(() => tanggalAwalController.text =
+                        DateFormat('yyyy-MM-dd').format(value!)),
+                  );
+                }),
+            tanggalAwalController.text.isNotEmpty
                 ? TextField(
-                    controller: endDateController,
+                    controller: tanggalAkhirController,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.calendar_today),
-                      labelText: 'End Date',
+                      labelText: 'Tanggal Akhir',
                       hintText: 'yyyy-mm-dd',
                     ),
                     readOnly: true,
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          //get today's date
-                          firstDate: DateTime(2024),
-                          lastDate: DateTime.now());
-
-                      if (pickedDate != null) {
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(pickedDate);
-
-                        setState(() {
-                          endDateController.text = formattedDate;
-                        });
-                      }
+                    onTap: () {
+                      showDatePicker(
+                        context: context,
+                        firstDate: DateTime.parse(tanggalAwalController.text)
+                            .add(const Duration(days: 1)),
+                        lastDate: DateTime.now().add(const Duration(days: 1)),
+                      ).then(
+                        (value) => setState(() => tanggalAkhirController.text =
+                            DateFormat('yyyy-MM-dd').format(value!)),
+                      );
                     },
                   )
                 : Container(),
@@ -133,23 +128,24 @@ class _GraphState extends State<Graph> {
               primaryXAxis: const DateTimeAxis(),
               title: ChartTitle(text: 'Grafik ${widget.title}'),
               zoomPanBehavior: _zoomPanBehavior,
+              trackballBehavior: _trackballBehavior,
               series: <LineSeries<GraphData, dynamic>>[
                 LineSeries(
                   dataSource: data.data?.where((e) {
-                    if (startDateController.text.isEmpty &&
-                        endDateController.text.isEmpty) {
+                    if (tanggalAwalController.text.isEmpty &&
+                        tanggalAkhirController.text.isEmpty) {
                       return true;
                     }
-                    if (endDateController.text.isEmpty) {
+                    if (tanggalAkhirController.text.isEmpty) {
                       return e.tanggal!.compareTo(
-                              DateTime.parse(startDateController.text)) >=
+                              DateTime.parse(tanggalAwalController.text)) >=
                           0;
                     }
                     return e.tanggal!.compareTo(
-                                DateTime.parse(startDateController.text)) >=
+                                DateTime.parse(tanggalAwalController.text)) >=
                             0 &&
                         e.tanggal!.compareTo(
-                                DateTime.parse(endDateController.text)) <=
+                                DateTime.parse(tanggalAkhirController.text)) <=
                             0;
                   }).toList(),
                   xValueMapper: (GraphData data, _) => data.tanggal,

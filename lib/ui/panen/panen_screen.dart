@@ -1,17 +1,18 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../model/tanaman.dart';
-import '../widgets/panen.dart';
+import '../../models/tanaman.dart';
+import '../../services/realtime_database_service.dart';
+import 'panen.dart';
 
-class PanenView extends StatelessWidget {
-  const PanenView({super.key});
+class PanenScreen extends StatelessWidget {
+  const PanenScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final ref1 = FirebaseDatabase.instance.ref('node1/tanaman');
-    final ref2 = FirebaseDatabase.instance.ref('node2/tanaman');
+    final service =
+        Provider.of<RealtimeDatabaseService>(context, listen: false);
 
     return Scaffold(
       body: Padding(
@@ -28,14 +29,14 @@ class PanenView extends StatelessWidget {
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Panen(title: r'node1', ref: ref1),
-                      Panen(title: r'node2', ref: ref2),
+                      Panen(node: r'node1', service: service),
+                      Panen(node: r'node2', service: service),
                     ],
                   )
                 : Column(
                     children: [
-                      Panen(title: r'node1', ref: ref1),
-                      Panen(title: r'node2', ref: ref2),
+                      Panen(node: r'node1', service: service),
+                      Panen(node: r'node2', service: service),
                     ],
                   ),
             const Divider(),
