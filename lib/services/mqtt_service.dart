@@ -9,9 +9,10 @@ class MqttService {
   Future<bool> publish(String topic, String message) async {
     if (kIsWeb) {
       client = MqttBrowserClient.withPort(
-          'ws://broker.emqx.io/mqtt', 'flutter_app', 8083);
+          'wss://broker.emqx.io/mqtt', 'flutter_web_app', 8084);
     } else {
-      client = MqttServerClient.withPort('broker.emqx.io', 'flutter_app', 1883);
+      client = MqttServerClient.withPort(
+          'broker.emqx.io', 'flutter_android_app', 1883);
     }
 
     client.logging(on: true);
@@ -21,7 +22,7 @@ class MqttService {
 
     try {
       await client.connect();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       client.disconnect();
       return false;
     }

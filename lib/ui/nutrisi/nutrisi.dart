@@ -17,6 +17,7 @@ class Nutrisi extends StatefulWidget {
 }
 
 class _NutrisiState extends State<Nutrisi> {
+  bool loading = false;
   bool success = false;
 
   @override
@@ -54,11 +55,18 @@ class _NutrisiState extends State<Nutrisi> {
             ),
             ElevatedButton(
               onPressed: () async {
+                setState(() {
+                  loading = true;
+                  success = false;
+                });
                 final prefs = await SharedPreferences.getInstance();
                 await MqttService()
-                    .publish(
-                        widget.node, prefs.getDouble(widget.node).toString())
-                    .then((_) => setState(() => success = true));
+                    .publish(widget.node,
+                        prefs.getDouble(widget.node)!.round().toString())
+                    .then((_) => setState(() {
+                          loading = false;
+                          success = true;
+                        }));
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
@@ -76,6 +84,7 @@ class _NutrisiState extends State<Nutrisi> {
             ),
             Text('PPM saat ini : ${data.ppm}',
                 style: const TextStyle(fontSize: 24)),
+            loading ? const CircularProgressIndicator() : Container(),
             success
                 ? Text('Berhasil mengirim perintah',
                     style: TextStyle(fontSize: 20, color: theme.primaryColor))
