@@ -1,12 +1,12 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-class MqttService {
+class MqttRepository {
   dynamic client;
 
-  Future<bool> publish(String topic, String message) async {
+  Future<void> publish(String topic, String message) async {
     if (kIsWeb) {
       client = MqttBrowserClient.withPort(
           'wss://broker.emqx.io/mqtt', 'flutter_web_app', 8084);
@@ -15,7 +15,7 @@ class MqttService {
           'broker.emqx.io', 'flutter_android_app', 1883);
     }
 
-    client.logging(on: true);
+    // client.logging(on: true);
     client.setProtocolV311();
     client.keepAlivePeriod = 60;
     client.connectTimeoutPeriod = 10000;
@@ -24,18 +24,16 @@ class MqttService {
       await client.connect();
     } on Exception catch (_) {
       client.disconnect();
-      return false;
+      return;
     }
 
     if (client.connectionStatus!.state != MqttConnectionState.connected) {
-      return false;
+      return;
     }
 
     final builder = MqttClientPayloadBuilder();
     builder.addString(message);
     client.publishMessage(topic, MqttQos.atMostOnce, builder.payload!);
     client.disconnect();
-
-    return true;
   }
 }

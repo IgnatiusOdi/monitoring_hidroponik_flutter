@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/data.dart';
-import '../../services/mqtt_service.dart';
-import '../../services/realtime_database_service.dart';
+import '../../repository/mqtt_repository.dart';
+import '../../repository/realtimedb_repository.dart';
 import 'nutrisi_slider.dart';
 
 class Nutrisi extends StatefulWidget {
   final String node;
-  final RealtimeDatabaseService service;
+  final RealtimedbRepository repository;
 
-  const Nutrisi({super.key, required this.node, required this.service});
+  const Nutrisi({super.key, required this.node, required this.repository});
 
   @override
   State<Nutrisi> createState() => _NutrisiState();
@@ -24,9 +25,10 @@ class _NutrisiState extends State<Nutrisi> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double width = MediaQuery.of(context).size.width;
+    final mqttRepository = RepositoryProvider.of<MqttRepository>(context);
 
     return StreamBuilder(
-      stream: widget.service.getNode(widget.node),
+      stream: widget.repository.getNode(widget.node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -60,7 +62,7 @@ class _NutrisiState extends State<Nutrisi> {
                   success = false;
                 });
                 final prefs = await SharedPreferences.getInstance();
-                await MqttService()
+                await mqttRepository
                     .publish(widget.node,
                         prefs.getDouble(widget.node)!.round().toString())
                     .then((_) => setState(() {

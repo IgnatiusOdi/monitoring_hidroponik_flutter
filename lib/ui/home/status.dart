@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../models/data.dart';
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 
 class Status extends StatelessWidget {
   final String node;
-  final RealtimeDatabaseService service;
+  final RealtimedbRepository repository;
 
-  const Status({super.key, required this.node, required this.service});
+  const Status({super.key, required this.node, required this.repository});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class Status extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
 
     return StreamBuilder(
-      stream: service.getNode(node),
+      stream: repository.getNode(node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

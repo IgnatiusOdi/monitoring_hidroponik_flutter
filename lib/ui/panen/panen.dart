@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../../models/tanaman.dart';
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 
 class Panen extends StatelessWidget {
   final String node;
-  final RealtimeDatabaseService service;
+  final RealtimedbRepository repository;
 
-  const Panen({super.key, required this.node, required this.service});
+  const Panen({super.key, required this.node, required this.repository});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: service.getNode('$node/tanaman'),
+      stream: repository.getNode('$node/tanaman'),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -46,10 +46,17 @@ class Panen extends StatelessWidget {
                   fontSize: 32,
                 ),
               ),
-              Text(
-                '$diff1 - $diff2 hari lagi',
-                style: const TextStyle(fontSize: 24),
-              ),
+              diff2! <= 0
+                  ? const Text('Siap Panen', style: TextStyle(fontSize: 24))
+                  : diff1! <= 0
+                      ? Text(
+                          'Bisa Panen hingga $diff2 hari lagi',
+                          style: const TextStyle(fontSize: 24),
+                        )
+                      : Text(
+                          '$diff1 - $diff2 hari lagi',
+                          style: const TextStyle(fontSize: 24),
+                        )
             ],
           ),
         );

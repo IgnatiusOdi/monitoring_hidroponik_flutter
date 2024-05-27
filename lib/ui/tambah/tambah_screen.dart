@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../services/realtime_database_service.dart';
 import '../../models/tanaman.dart';
+import '../../repository/realtimedb_repository.dart';
 
 enum Node { node1, node2 }
 
@@ -21,8 +21,7 @@ class _TambahScreenState extends State<TambahScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final service =
-        Provider.of<RealtimeDatabaseService>(context, listen: false);
+    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
@@ -93,7 +92,7 @@ class _TambahScreenState extends State<TambahScreen> {
             ),
           ),
           error
-              ? const Text("Mohon mengisi node dan node",
+              ? const Text("Mohon mengisi node dan tanaman",
                   style: TextStyle(color: Colors.red))
               : Container(),
           success
@@ -111,7 +110,7 @@ class _TambahScreenState extends State<TambahScreen> {
                       loading = true;
                       error = false;
                     });
-                    await service
+                    await repository
                         .updateTanaman('$node/tanaman', selectedTanaman!)
                         .then((_) => setState(() {
                               loading = false;

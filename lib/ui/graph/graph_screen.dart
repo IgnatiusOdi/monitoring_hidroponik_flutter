@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 import 'graph.dart';
 
 class GraphScreen extends StatelessWidget {
@@ -14,8 +14,7 @@ class GraphScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final service =
-        Provider.of<RealtimeDatabaseService>(context, listen: false);
+    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
     String title = page == 'ph'
         ? 'pH Air $node'
         : page == 'ppm'
@@ -35,7 +34,8 @@ class GraphScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          child: Graph(page: page, title: title, node: node, service: service),
+          child: Graph(
+              page: page, title: title, node: node, repository: repository),
         ),
       ),
     );

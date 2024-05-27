@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 import 'status.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,8 +9,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final service =
-        Provider.of<RealtimeDatabaseService>(context, listen: false);
+    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
@@ -23,8 +22,8 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
               const Divider(),
-              Status(node: r'node1', service: service),
-              Status(node: r'node2', service: service),
+              Status(node: r'node1', repository: repository),
+              Status(node: r'node2', repository: repository),
             ],
           ),
         ),

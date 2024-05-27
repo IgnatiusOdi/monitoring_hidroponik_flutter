@@ -4,7 +4,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../models/data.dart';
 import '../../models/graph_data.dart';
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 
 class Graph extends StatefulWidget {
   // pH Air, Kadar PPM, Suhu Air
@@ -14,14 +14,14 @@ class Graph extends StatefulWidget {
   final String page;
 
   final String node;
-  final RealtimeDatabaseService service;
+  final RealtimedbRepository repository;
 
   const Graph({
     super.key,
     required this.page,
     required this.title,
     required this.node,
-    required this.service,
+    required this.repository,
   });
 
   @override
@@ -55,7 +55,7 @@ class _GraphState extends State<Graph> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: widget.service.getNode(widget.node),
+      stream: widget.repository.getNode(widget.node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/tanaman.dart';
-import '../../services/realtime_database_service.dart';
+import '../../repository/realtimedb_repository.dart';
 import 'panen.dart';
 
 class PanenScreen extends StatelessWidget {
@@ -11,14 +11,12 @@ class PanenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final service =
-        Provider.of<RealtimeDatabaseService>(context, listen: false);
+    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
               r'Perkiraan Waktu Panen',
@@ -29,14 +27,14 @@ class PanenScreen extends StatelessWidget {
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Panen(node: r'node1', service: service),
-                      Panen(node: r'node2', service: service),
+                      Panen(node: r'node1', repository: repository),
+                      Panen(node: r'node2', repository: repository),
                     ],
                   )
                 : Column(
                     children: [
-                      Panen(node: r'node1', service: service),
-                      Panen(node: r'node2', service: service),
+                      Panen(node: r'node1', repository: repository),
+                      Panen(node: r'node2', repository: repository),
                     ],
                   ),
             const Divider(),
