@@ -30,6 +30,7 @@ class GraphScreen extends StatelessWidget {
             },
           ),
           title: Text(title),
+          foregroundColor: theme.colorScheme.surface,
           backgroundColor: theme.primaryColor),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

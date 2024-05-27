@@ -27,7 +27,7 @@ class _TambahScreenState extends State<TambahScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: [
-          const Text('Tambah Tanaman Baru',
+          const Text('TAMBAH TANAMAN BARU',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           const Divider(),
           Container(

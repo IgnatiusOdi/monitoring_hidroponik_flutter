@@ -19,7 +19,7 @@ class PanenScreen extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              r'Perkiraan Waktu Panen',
+              r'PERKIRAAN WAKTU PANEN',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
             ),
             const Divider(),

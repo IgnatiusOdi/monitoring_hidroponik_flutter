@@ -46,11 +46,11 @@ class _LayoutScreenState extends State<LayoutScreen> {
           return Scaffold(
             appBar: AppBar(
                 title: const Text('Sistem Monitoring Hidroponik'),
-                foregroundColor: theme.colorScheme.background,
+                foregroundColor: theme.colorScheme.surface,
                 backgroundColor: theme.primaryColor,
                 actions: [
                   IconButton(
-                    color: theme.colorScheme.background,
+                    color: theme.colorScheme.surface,
                     icon: const Icon(Icons.logout),
                     onPressed: () {
                       context.read<LoginBloc>().add(SignOut());
