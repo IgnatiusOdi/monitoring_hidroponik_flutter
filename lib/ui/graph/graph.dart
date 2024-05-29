@@ -66,6 +66,7 @@ class _GraphState extends State<Graph> {
 
         var data = Data.fromJson(
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
+        data.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
 
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -129,8 +130,8 @@ class _GraphState extends State<Graph> {
               title: ChartTitle(text: 'Grafik ${widget.title}'),
               zoomPanBehavior: _zoomPanBehavior,
               trackballBehavior: _trackballBehavior,
-              series: <LineSeries<GraphData, dynamic>>[
-                LineSeries(
+              series: <CartesianSeries<GraphData, dynamic>>[
+                FastLineSeries(
                   dataSource: data.data?.where((e) {
                     if (tanggalAwalController.text.isEmpty &&
                         tanggalAkhirController.text.isEmpty) {

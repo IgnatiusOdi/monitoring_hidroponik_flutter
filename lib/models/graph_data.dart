@@ -8,4 +8,9 @@ class GraphData {
     tanggal = DateTime.parse(json['tanggal']);
     value = json['value'];
   }
+
+  @override
+  String toString() {
+    return 'tanggal: $tanggal, value: $value';
+  }
 }

@@ -8,7 +8,7 @@ class RealtimedbRepository {
   final _database = FirebaseDatabase.instance;
 
   Stream<DatabaseEvent> getNode(String node) {
-    return _database.ref(node).onValue;
+    return _database.ref(node).orderByKey().onValue;
   }
 
   Future<void> updateTanaman(String node, Tanaman tanaman) async {

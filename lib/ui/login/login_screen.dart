@@ -167,7 +167,7 @@ class LoginButton extends StatelessWidget {
                 : Text(
                     'LOGIN',
                     style: TextStyle(
-                      color: theme.colorScheme.background,
+                      color: theme.colorScheme.surface,
                       fontSize: 16,
                     ),
                   ),
