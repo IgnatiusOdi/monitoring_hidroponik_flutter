@@ -12,7 +12,7 @@ class Panen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: repository.getNode('$node/tanaman'),
+      stream: repository.getStreamNode('$node/tanaman'),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -50,11 +50,11 @@ class Panen extends StatelessWidget {
                   ? const Text('Siap Panen', style: TextStyle(fontSize: 24))
                   : diff1! <= 0
                       ? Text(
-                          'Bisa Panen hingga $diff2 hari lagi',
+                          'Bisa Panen hingga $diff2 hari',
                           style: const TextStyle(fontSize: 24),
                         )
                       : Text(
-                          '$diff1 - $diff2 hari lagi',
+                          '$diff1 - $diff2 hari',
                           style: const TextStyle(fontSize: 24),
                         )
             ],

@@ -6,7 +6,7 @@ import '../bloc/login/login_bloc.dart';
 import 'home/home_screen.dart';
 import 'nutrisi/nutrisi_screen.dart';
 import 'panen/panen_screen.dart';
-import 'tambah/tambah_screen.dart';
+import 'update/update_screen.dart';
 
 class LayoutScreen extends StatefulWidget {
   const LayoutScreen({super.key});
@@ -22,7 +22,7 @@ class _LayoutScreenState extends State<LayoutScreen> {
     const HomeScreen(),
     const NutrisiScreen(),
     const PanenScreen(),
-    const TambahScreen(),
+    const UpdateScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -45,18 +45,28 @@ class _LayoutScreenState extends State<LayoutScreen> {
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
-                title: const Text('Sistem Monitoring Hidroponik'),
-                foregroundColor: theme.colorScheme.surface,
-                backgroundColor: theme.primaryColor,
-                actions: [
-                  IconButton(
-                    color: theme.colorScheme.surface,
-                    icon: const Icon(Icons.logout),
-                    onPressed: () {
-                      context.read<LoginBloc>().add(SignOut());
-                    },
-                  )
-                ]),
+              title: const Text('Monitoring Hidroponik'),
+              foregroundColor: theme.colorScheme.surface,
+              backgroundColor: theme.primaryColor,
+              actions: [
+                IconButton(
+                  tooltip: 'History',
+                  color: theme.colorScheme.surface,
+                  icon: const Icon(Icons.assignment),
+                  onPressed: () {
+                    context.goNamed('history');
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Logout',
+                  color: theme.colorScheme.surface,
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {
+                    context.read<LoginBloc>().add(SignOut());
+                  },
+                )
+              ],
+            ),
             body: _pages[_selectedIndex],
             bottomNavigationBar: BottomNavigationBar(
                 elevation: 0,
@@ -67,15 +77,25 @@ class _LayoutScreenState extends State<LayoutScreen> {
                 type: BottomNavigationBarType.shifting,
                 items: const [
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.home), label: 'Home'),
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                    tooltip: 'Home',
+                  ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.water_drop),
                     label: 'Nutrisi',
+                    tooltip: 'Nutrisi',
                   ),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.compost), label: 'Panen'),
+                    icon: Icon(Icons.compost),
+                    label: 'Panen',
+                    tooltip: 'Panen',
+                  ),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.add), label: 'Tambah'),
+                    icon: Icon(Icons.update),
+                    label: 'Update',
+                    tooltip: 'Update',
+                  ),
                 ]),
           );
         },

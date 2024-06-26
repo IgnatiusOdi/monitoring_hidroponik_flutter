@@ -28,7 +28,7 @@ class _NutrisiState extends State<Nutrisi> {
     final mqttRepository = RepositoryProvider.of<MqttRepository>(context);
 
     return StreamBuilder(
-      stream: widget.repository.getNode(widget.node),
+      stream: widget.repository.getStreamNode(widget.node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

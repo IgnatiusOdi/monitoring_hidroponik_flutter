@@ -15,5 +15,42 @@
   },
   "database": {
     "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "hidroponik-flutter",
+          "appId": "1:1063045355610:android:4409214ed386909a04e063",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "hidroponik-flutter",
+          "configurations": {
+            "android": "1:1063045355610:android:4409214ed386909a04e063",
+            "web": "1:1063045355610:web:200757bfae41148b04e063"
+          }
+        }
+      }
+    }
   }
 }

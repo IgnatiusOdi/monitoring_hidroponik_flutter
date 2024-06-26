@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/data.dart';
 import '../../models/tanaman.dart';
+import '../../repository/firestore_repository.dart';
 import '../../repository/realtimedb_repository.dart';
 
 enum Node { node1, node2 }
 
-class TambahScreen extends StatefulWidget {
-  const TambahScreen({super.key});
+class UpdateScreen extends StatefulWidget {
+  const UpdateScreen({super.key});
 
   @override
-  State<TambahScreen> createState() => _TambahScreenState();
+  State<UpdateScreen> createState() => _UpdateScreenState();
 }
 
-class _TambahScreenState extends State<TambahScreen> {
+class _UpdateScreenState extends State<UpdateScreen> {
   String? node;
   Tanaman? selectedTanaman;
   bool loading = false, error = false, success = false;
@@ -21,13 +23,15 @@ class _TambahScreenState extends State<TambahScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
+    final firestoreRepository =
+        RepositoryProvider.of<FirestoreRepository>(context);
+    final dbRepository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: [
-          const Text('TAMBAH TANAMAN BARU',
+          const Text('UPDATE TANAMAN',
               style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           const Divider(),
           Container(
@@ -38,28 +42,21 @@ class _TambahScreenState extends State<TambahScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('Node :', style: TextStyle(fontSize: 24)),
-                Row(children: [
-                  Radio(
-                      value: Node.node1.name,
-                      groupValue: node,
-                      onChanged: (value) {
-                        setState(() {
-                          node = value;
-                        });
-                      }),
-                  Text(Node.node1.name)
-                ]),
-                Row(children: [
-                  Radio(
-                      value: Node.node2.name,
-                      groupValue: node,
-                      onChanged: (value) {
-                        setState(() {
-                          node = value;
-                        });
-                      }),
-                  Text(Node.node2.name)
-                ])
+                ListView(
+                  shrinkWrap: true,
+                  children: Node.values
+                      .map((n) => ListTile(
+                          title: Text(n.name),
+                          selected: node == n.name,
+                          selectedColor: Colors.white,
+                          selectedTileColor: theme.primaryColor,
+                          onTap: () {
+                            setState(() {
+                              node = n.name;
+                            });
+                          }))
+                      .toList(),
+                )
               ],
             ),
           ),
@@ -96,7 +93,7 @@ class _TambahScreenState extends State<TambahScreen> {
                   style: TextStyle(color: Colors.red))
               : Container(),
           success
-              ? Text("Berhasil menambah node baru",
+              ? Text("Berhasil update $node",
                   style: TextStyle(color: theme.primaryColor))
               : Container(),
           Align(
@@ -110,8 +107,19 @@ class _TambahScreenState extends State<TambahScreen> {
                       loading = true;
                       error = false;
                     });
-                    await repository
-                        .updateTanaman('$node/tanaman', selectedTanaman!)
+
+                    var data = await dbRepository.getNode(node!);
+
+                    // Add to Cloud Firestore
+                    firestoreRepository.addLog(
+                      node!,
+                      Data.fromJson(
+                          data.snapshot.value as Map<dynamic, dynamic>),
+                    );
+
+                    // Update Tanaman
+                    await dbRepository
+                        .updateTanaman(node!, selectedTanaman!)
                         .then((_) => setState(() {
                               loading = false;
                               success = true;

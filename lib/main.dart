@@ -1,22 +1,30 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:monitoring_hidroponik_flutter/ui/history/detail_screen.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'bloc/login/login_bloc.dart';
 import 'repository/authentication_repository.dart';
+import 'repository/firestore_repository.dart';
+import 'repository/messaging_repository.dart';
 import 'repository/mqtt_repository.dart';
 import 'repository/realtimedb_repository.dart';
-import 'ui/error_screen.dart';
 import 'ui/graph/graph_screen.dart';
-import 'ui/layout_screen.dart';
+import 'ui/history/history_screen.dart';
 import 'ui/login/login_screen.dart';
+import 'ui/error_screen.dart';
+import 'ui/layout_screen.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (!kIsWeb) {
+    await MessagingRepository().initNotifications();
+  }
   setPathUrlStrategy();
 
   final authenticationRepository = AuthenticationRepository();
@@ -32,22 +40,17 @@ final class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(
-          create: (_) => authenticationRepository,
-        ),
-        RepositoryProvider(
-          create: (_) => MqttRepository(),
-        ),
-        RepositoryProvider(
-          create: (_) => RealtimedbRepository(),
-        ),
+        RepositoryProvider(create: (_) => authenticationRepository),
+        RepositoryProvider(create: (_) => FirestoreRepository()),
+        RepositoryProvider(create: (_) => MqttRepository()),
+        RepositoryProvider(create: (_) => RealtimedbRepository()),
       ],
       child: BlocProvider(
         create: (context) =>
             LoginBloc(authenticationRepository: authenticationRepository),
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
-          title: 'Sistem Monitoring Hidroponik',
+          title: 'Monitoring Hidroponik',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
             useMaterial3: true,
@@ -61,7 +64,7 @@ final class App extends StatelessWidget {
 
 getRouterConfig(authenticationRepository) {
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/history',
     // debugLogDiagnostics: true,
     errorBuilder: (context, state) => ErrorScreen(error: state.error),
     routes: [
@@ -69,11 +72,16 @@ getRouterConfig(authenticationRepository) {
         path: '/',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
+        redirect: (context, state) =>
+            (authenticationRepository.user != null) ? '/home' : null,
       ),
       GoRoute(
-          path: '/home',
-          name: 'home',
-          builder: (context, state) => const LayoutScreen()),
+        path: '/home',
+        name: 'home',
+        builder: (context, state) => const LayoutScreen(),
+        redirect: (context, state) =>
+            (authenticationRepository.user == null) ? '/' : null,
+      ),
       GoRoute(
         path: '/:page/:node',
         name: 'graph',
@@ -81,16 +89,27 @@ getRouterConfig(authenticationRepository) {
           page: state.pathParameters['page']!,
           node: state.pathParameters['node']!,
         ),
+        redirect: (context, state) =>
+            (authenticationRepository.user == null) ? '/' : null,
+      ),
+      GoRoute(
+        path: '/history',
+        name: 'history',
+        builder: (context, state) => const HistoryScreen(),
+        redirect: (context, state) =>
+            (authenticationRepository.user == null) ? '/' : null,
+      ),
+      GoRoute(
+        path: '/history/:node/:docid/:tanggal',
+        name: 'detail',
+        builder: (context, state) => DetailScreen(
+          node: state.pathParameters['node']!,
+          docid: state.pathParameters['docid']!,
+          tanggal: state.pathParameters['tanggal']!,
+        ),
+        redirect: (context, state) =>
+            (authenticationRepository.user == null) ? '/' : null,
       ),
     ],
-    redirect: (context, state) async {
-      final bool loggedIn = authenticationRepository.user != null;
-      if (!loggedIn) return '/';
-
-      final bool loggingIn = state.matchedLocation == '/';
-      if (loggingIn) return '/home';
-
-      return null;
-    },
   );
 }

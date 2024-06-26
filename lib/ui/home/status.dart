@@ -17,7 +17,7 @@ class Status extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
 
     return StreamBuilder(
-      stream: repository.getNode(node),
+      stream: repository.getStreamNode(node),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -28,6 +28,7 @@ class Status extends StatelessWidget {
 
         var data = Data.fromJson(
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

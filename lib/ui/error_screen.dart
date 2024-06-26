@@ -16,14 +16,29 @@ class ErrorScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              '404 NOT FOUND',
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+            Text(
+              '404',
+              style: TextStyle(fontSize: 100, color: theme.colorScheme.error),
             ),
-            const SizedBox(height: 30),
+            Text(
+              'Page Not Found',
+              style: TextStyle(fontSize: 40, color: theme.colorScheme.error),
+            ),
+            const SizedBox(height: 60),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.secondary,
+                foregroundColor: theme.colorScheme.onSecondary,
+                padding: const EdgeInsets.all(24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () => context.go('/'),
-              child: const Text('Back to Login'),
+              child: const Text(
+                '<  Back to Login',
+                style: TextStyle(fontSize: 20),
+              ),
             )
           ],
         ),
