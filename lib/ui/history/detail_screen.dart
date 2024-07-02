@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../models/graph_data.dart';
@@ -42,7 +43,10 @@ class _DetailScreenState extends State<DetailScreen> {
       activationMode: ActivationMode.singleTap,
       lineType: TrackballLineType.vertical,
       tooltipSettings: const InteractiveTooltip(
-          enable: true, color: Colors.green, format: 'point.x'),
+        enable: true,
+        color: Colors.green,
+        format: 'point.x',
+      ),
     );
   }
 
@@ -53,21 +57,25 @@ class _DetailScreenState extends State<DetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              context.goNamed('history');
-            },
-          ),
-          title: const Text('Detail History'),
-          foregroundColor: theme.colorScheme.surface,
-          backgroundColor: theme.primaryColor),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.goNamed('history');
+          },
+        ),
+        title: const Text('Detail History'),
+        foregroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.primaryColor,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: StreamBuilder(
             stream: repository.getHistory(
-                widget.node, widget.docid, widget.tanggal),
+              widget.node,
+              widget.docid,
+              widget.tanggal,
+            ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -82,45 +90,145 @@ class _DetailScreenState extends State<DetailScreen> {
                   .toList();
               data.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
 
-              return SfCartesianChart(
-                primaryXAxis: const DateTimeAxis(),
-                title: const ChartTitle(text: 'Grafik'),
-                zoomPanBehavior: _zoomPanBehavior,
-                trackballBehavior: _trackballBehavior,
-                legend: const Legend(
-                  isVisible: true,
-                  position: LegendPosition.bottom,
-                ),
-                series: <CartesianSeries<GraphData, dynamic>>[
-                  FastLineSeries(
-                    name: 'pH',
-                    dataSource: data,
-                    xValueMapper: (GraphData data, _) => data.tanggal,
-                    yValueMapper: (GraphData data, _) =>
-                        double.parse(data.value!.split(",")[0]),
-                    dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    markerSettings: const MarkerSettings(isVisible: true),
-                    animationDuration: 0,
+              return Column(
+                children: [
+                  TextField(
+                    controller: tanggalAwalController,
+                    decoration: const InputDecoration(
+                      icon: Icon(Icons.calendar_today),
+                      labelText: 'Tanggal Awal',
+                      hintText: 'yyyy-mm-dd',
+                    ),
+                    readOnly: true,
+                    onTap: () {
+                      showDatePicker(
+                        context: context,
+                        firstDate: DateTime(2024),
+                        lastDate: DateTime.now(),
+                      ).then(
+                        (value) => setState(() => tanggalAwalController.text =
+                            DateFormat('yyyy-MM-dd').format(value!)),
+                      );
+                    },
                   ),
-                  FastLineSeries(
-                    name: 'ppm',
-                    dataSource: data,
-                    xValueMapper: (GraphData data, _) => data.tanggal,
-                    yValueMapper: (GraphData data, _) =>
-                        double.parse(data.value!.split(",")[1]),
-                    dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    markerSettings: const MarkerSettings(isVisible: true),
-                    animationDuration: 0,
-                  ),
-                  FastLineSeries(
-                    name: 'suhu',
-                    dataSource: data,
-                    xValueMapper: (GraphData data, _) => data.tanggal,
-                    yValueMapper: (GraphData data, _) =>
-                        double.parse(data.value!.split(",")[2]),
-                    dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    markerSettings: const MarkerSettings(isVisible: true),
-                    animationDuration: 0,
+                  tanggalAwalController.text.isNotEmpty
+                      ? TextField(
+                          controller: tanggalAkhirController,
+                          decoration: const InputDecoration(
+                            icon: Icon(Icons.calendar_today),
+                            labelText: 'Tanggal Akhir',
+                            hintText: 'yyyy-mm-dd',
+                          ),
+                          readOnly: true,
+                          onTap: () {
+                            showDatePicker(
+                              context: context,
+                              firstDate:
+                                  DateTime.parse(tanggalAwalController.text)
+                                      .add(const Duration(days: 1)),
+                              lastDate:
+                                  DateTime.now().add(const Duration(days: 1)),
+                            ).then(
+                              (value) => setState(() =>
+                                  tanggalAkhirController.text =
+                                      DateFormat('yyyy-MM-dd').format(value!)),
+                            );
+                          },
+                        )
+                      : Container(),
+                  const Divider(),
+                  SfCartesianChart(
+                    primaryXAxis: const DateTimeAxis(),
+                    title: ChartTitle(text: 'Grafik ${widget.tanggal}'),
+                    zoomPanBehavior: _zoomPanBehavior,
+                    trackballBehavior: _trackballBehavior,
+                    legend: const Legend(
+                      isVisible: true,
+                      position: LegendPosition.bottom,
+                    ),
+                    series: <CartesianSeries<GraphData, dynamic>>[
+                      FastLineSeries(
+                        name: 'pH',
+                        dataSource: data.where((e) {
+                          if (tanggalAwalController.text.isEmpty &&
+                              tanggalAkhirController.text.isEmpty) {
+                            return true;
+                          }
+                          if (tanggalAkhirController.text.isEmpty) {
+                            return e.tanggal!.compareTo(DateTime.parse(
+                                    tanggalAwalController.text)) >=
+                                0;
+                          }
+                          return e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAwalController.text)) >=
+                                  0 &&
+                              e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAkhirController.text)) <=
+                                  0;
+                        }).toList(),
+                        xValueMapper: (GraphData data, _) => data.tanggal,
+                        yValueMapper: (GraphData data, _) =>
+                            double.parse(data.value!.split(",")[0]),
+                        dataLabelSettings:
+                            const DataLabelSettings(isVisible: true),
+                        markerSettings: const MarkerSettings(isVisible: true),
+                        animationDuration: 0,
+                      ),
+                      FastLineSeries(
+                        name: 'ppm',
+                        dataSource: data.where((e) {
+                          if (tanggalAwalController.text.isEmpty &&
+                              tanggalAkhirController.text.isEmpty) {
+                            return true;
+                          }
+                          if (tanggalAkhirController.text.isEmpty) {
+                            return e.tanggal!.compareTo(DateTime.parse(
+                                    tanggalAwalController.text)) >=
+                                0;
+                          }
+                          return e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAwalController.text)) >=
+                                  0 &&
+                              e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAkhirController.text)) <=
+                                  0;
+                        }).toList(),
+                        xValueMapper: (GraphData data, _) => data.tanggal,
+                        yValueMapper: (GraphData data, _) =>
+                            double.parse(data.value!.split(",")[1]),
+                        dataLabelSettings:
+                            const DataLabelSettings(isVisible: true),
+                        markerSettings: const MarkerSettings(isVisible: true),
+                        animationDuration: 0,
+                      ),
+                      FastLineSeries(
+                        name: 'suhu',
+                        dataSource: data.where((e) {
+                          if (tanggalAwalController.text.isEmpty &&
+                              tanggalAkhirController.text.isEmpty) {
+                            return true;
+                          }
+                          if (tanggalAkhirController.text.isEmpty) {
+                            return e.tanggal!.compareTo(DateTime.parse(
+                                    tanggalAwalController.text)) >=
+                                0;
+                          }
+                          return e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAwalController.text)) >=
+                                  0 &&
+                              e.tanggal!.compareTo(DateTime.parse(
+                                      tanggalAkhirController.text)) <=
+                                  0;
+                        }).toList(),
+                        xValueMapper: (GraphData data, _) => data.tanggal,
+                        yValueMapper: (GraphData data, _) =>
+                            double.parse(data.value!.split(",")[2]),
+                        dataLabelSettings:
+                            const DataLabelSettings(isVisible: true),
+                        markerSettings: const MarkerSettings(isVisible: true),
+                        animationDuration: 0,
+                      ),
+                    ],
                   ),
                 ],
               );

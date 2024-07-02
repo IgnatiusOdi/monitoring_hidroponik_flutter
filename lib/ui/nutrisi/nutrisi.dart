@@ -41,6 +41,8 @@ class _NutrisiState extends State<Nutrisi> {
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
         final diff = DateTime.now().difference(data.penambahanPPM!).inDays;
 
+        var ppm = int.parse(data.data!.last.value!.split(',')[1]);
+
         return Column(
           children: [
             Text(
@@ -84,8 +86,7 @@ class _NutrisiState extends State<Nutrisi> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
-            Text('PPM saat ini : ${data.ppm}',
-                style: const TextStyle(fontSize: 24)),
+            Text('PPM saat ini : $ppm', style: const TextStyle(fontSize: 24)),
             loading ? const CircularProgressIndicator() : Container(),
             success
                 ? Text('Berhasil mengirim perintah',

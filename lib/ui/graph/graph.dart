@@ -48,7 +48,10 @@ class _GraphState extends State<Graph> {
       activationMode: ActivationMode.singleTap,
       lineType: TrackballLineType.vertical,
       tooltipSettings: const InteractiveTooltip(
-          enable: true, color: Colors.green, format: 'point.x'),
+        enable: true,
+        color: Colors.green,
+        format: 'point.x',
+      ),
     );
   }
 
@@ -68,6 +71,10 @@ class _GraphState extends State<Graph> {
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
         data.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
 
+        var ph = data.data!.last.value!.split(',')[0];
+        var ppm = data.data!.last.value!.split(',')[1];
+        var suhu = data.data!.last.value!.split(',')[2];
+
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -77,10 +84,10 @@ class _GraphState extends State<Graph> {
             ),
             Text(
               widget.page == 'ph'
-                  ? '${data.ph}'
+                  ? ph
                   : widget.page == 'ppm'
-                      ? '${data.ppm}'
-                      : '${data.suhu} \u00B0C',
+                      ? ppm
+                      : '$suhu \u00B0C',
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
             ),
             const Divider(),
@@ -157,7 +164,7 @@ class _GraphState extends State<Graph> {
                           : double.parse(data.value!.split(',')[2]),
                   dataLabelSettings: const DataLabelSettings(isVisible: true),
                   markerSettings: const MarkerSettings(isVisible: true),
-                  animationDuration: 200,
+                  animationDuration: 0,
                 ),
               ],
             ),

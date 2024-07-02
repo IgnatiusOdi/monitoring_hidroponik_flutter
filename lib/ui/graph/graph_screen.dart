@@ -6,10 +6,10 @@ import '../../repository/realtimedb_repository.dart';
 import 'graph.dart';
 
 class GraphScreen extends StatelessWidget {
-  final String page;
   final String node;
+  final String page;
 
-  const GraphScreen({super.key, required this.page, required this.node});
+  const GraphScreen({super.key, required this.node, required this.page});
 
   @override
   Widget build(BuildContext context) {

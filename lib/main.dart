@@ -83,11 +83,11 @@ getRouterConfig(authenticationRepository) {
             (authenticationRepository.user == null) ? '/' : null,
       ),
       GoRoute(
-        path: '/:page/:node',
+        path: '/:node/:page',
         name: 'graph',
         builder: (context, state) => GraphScreen(
-          page: state.pathParameters['page']!,
           node: state.pathParameters['node']!,
+          page: state.pathParameters['page']!,
         ),
         redirect: (context, state) =>
             (authenticationRepository.user == null) ? '/' : null,
@@ -100,12 +100,12 @@ getRouterConfig(authenticationRepository) {
             (authenticationRepository.user == null) ? '/' : null,
       ),
       GoRoute(
-        path: '/history/:node/:docid/:tanggal',
+        path: '/history/:node/:docid',
         name: 'detail',
         builder: (context, state) => DetailScreen(
           node: state.pathParameters['node']!,
           docid: state.pathParameters['docid']!,
-          tanggal: state.pathParameters['tanggal']!,
+          tanggal: state.extra.toString(),
         ),
         redirect: (context, state) =>
             (authenticationRepository.user == null) ? '/' : null,

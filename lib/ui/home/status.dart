@@ -29,6 +29,10 @@ class Status extends StatelessWidget {
         var data = Data.fromJson(
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
 
+        var ph = double.parse(data.data!.last.value!.split(',')[0]);
+        var ppm = int.parse(data.data!.last.value!.split(',')[1]);
+        var suhu = double.parse(data.data!.last.value!.split(',')[2]);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -64,11 +68,11 @@ class Status extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
                       StatusCard(theme.colorScheme.primaryContainer, node, 'ph',
-                          'pH Air', data.ph!),
+                          'pH Air', ph),
                       StatusCard(theme.colorScheme.primaryContainer, node,
-                          'ppm', 'Kadar PPM', data.ppm!),
+                          'ppm', 'Kadar PPM', ppm),
                       StatusCard(theme.colorScheme.primaryContainer, node,
-                          'suhu', 'Suhu Air', '${data.suhu} \u00B0C'),
+                          'suhu', 'Suhu Air', '$suhu \u00B0C'),
                     ],
                   )
                 : Container(),
@@ -97,20 +101,20 @@ class Status extends StatelessWidget {
                                   : Container(),
 
                               // PH
-                              data.ph! < 5.5 || data.ph! > 6.5
+                              ph < 5.5 || ph > 6.5
                                   ? NotifikasiCard('pH Air melewati batas!',
                                       Colors.yellowAccent, width)
                                   : Container(),
 
                               // PPM
-                              data.ppm! < data.tanaman!.ppmMin!.toInt() ||
-                                      data.ppm! > data.tanaman!.ppmMax!.toInt()
+                              ppm < data.tanaman!.ppmMin!.toInt() ||
+                                      ppm > data.tanaman!.ppmMax!.toInt()
                                   ? NotifikasiCard('Kadar PPM melewati batas!',
                                       Colors.yellowAccent, width)
                                   : Container(),
 
                               // SUHU
-                              data.suhu! < 20 || data.suhu! > 25
+                              suhu < 20 || suhu > 25
                                   ? NotifikasiCard('Suhu Air melewati batas!',
                                       Colors.redAccent, width)
                                   : Container(),
@@ -147,7 +151,7 @@ class StatusCard extends StatelessWidget {
         onTap: () {
           context.goNamed(
             'graph',
-            pathParameters: {'page': page, 'node': node},
+            pathParameters: {'node': node, 'page': page},
           );
         },
         child: SizedBox(

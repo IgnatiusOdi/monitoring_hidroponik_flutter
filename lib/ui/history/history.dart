@@ -25,7 +25,10 @@ class History extends StatelessWidget {
         data.sort((a, b) => a['tanggal'].compareTo(b['tanggal']));
 
         if (data.isEmpty) {
-          return const Center(child: Text('Tidak ada history'));
+          return const Text(
+            'Tidak ada history',
+            style: TextStyle(fontSize: 18),
+          );
         }
 
         return ListView.builder(
@@ -43,11 +46,11 @@ class History extends StatelessWidget {
                 ],
               ),
               onTap: () {
-                context.goNamed('detail', pathParameters: {
-                  'node': node,
-                  'docid': doc.id,
-                  'tanggal': doc.data()['tanggal'],
-                });
+                context.goNamed(
+                  'detail',
+                  pathParameters: {'node': node, 'docid': doc.id},
+                  extra: doc.data()['tanggal'],
+                );
               },
             );
           },

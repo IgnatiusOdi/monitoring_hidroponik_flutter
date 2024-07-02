@@ -5,8 +5,6 @@ import '../../repository/realtimedb_repository.dart';
 import 'nutrisi.dart';
 
 class NutrisiScreen extends StatelessWidget {
-  const NutrisiScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final repository = RepositoryProvider.of<RealtimedbRepository>(context);
@@ -27,6 +25,13 @@ class NutrisiScreen extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: IconButton(
+        tooltip: "Tunggu sebentar setelah tambah nutrisi",
+        icon: const Icon(Icons.info),
+        onPressed: () {},
+      ),
     );
   }
+
+  const NutrisiScreen({super.key});
 }
