@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../repository/firestore_repository.dart';
 import 'history.dart';
 
 class HistoryScreen extends StatelessWidget {

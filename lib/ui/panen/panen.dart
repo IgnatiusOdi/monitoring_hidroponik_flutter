@@ -2,7 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/data.dart';
+import '../../models/tanaman.dart';
 import '../../repository/realtimedb_repository.dart';
 
 class Panen extends StatefulWidget {
@@ -19,7 +19,9 @@ class _PanenState extends State<Panen> {
 
   @override
   void initState() {
-    stream = context.read<RealtimedbRepository>().getStreamNode(widget.node);
+    stream = context
+        .read<RealtimedbRepository>()
+        .getStreamNode('${widget.node}/tanaman');
     super.initState();
   }
 
@@ -38,10 +40,10 @@ class _PanenState extends State<Panen> {
           return const Center(child: Text('No data'));
         }
 
-        var data = Data.fromJson(
+        var data = TanamanData.fromJson(
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
-        final diff1 = data.tanaman!.panen1!.difference(DateTime.now()).inDays;
-        final diff2 = data.tanaman!.panen2!.difference(DateTime.now()).inDays;
+        final diff1 = data.panen1!.difference(DateTime.now()).inDays;
+        final diff2 = data.panen2!.difference(DateTime.now()).inDays;
 
         return Container(
           margin: const EdgeInsets.all(8),
@@ -57,7 +59,7 @@ class _PanenState extends State<Panen> {
                 style: const TextStyle(fontSize: 24),
               ),
               Text(
-                data.tanaman!.jenis!,
+                data.jenis!,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 32,
