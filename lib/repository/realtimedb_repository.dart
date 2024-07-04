@@ -12,7 +12,7 @@ class RealtimedbRepository {
     return _database.ref(node).orderByKey().onValue;
   }
 
-  Future<DatabaseEvent> getNode(String node) {
+  Future<DatabaseEvent> getFutureNode(String node) {
     return _database.ref(node).orderByKey().once();
   }
 

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,8 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  late Stream<QuerySnapshot<Map<String, dynamic>>> stream;
+
   late ZoomPanBehavior _zoomPanBehavior;
   late TrackballBehavior _trackballBehavior;
   final tanggalAwalController = TextEditingController();
@@ -31,7 +34,11 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   void initState() {
-    super.initState();
+    stream = context.read<FirestoreRepository>().getHistory(
+          widget.node,
+          widget.docid,
+          widget.tanggal,
+        );
     _zoomPanBehavior = ZoomPanBehavior(
       enableMouseWheelZooming: true,
       enablePinching: true,
@@ -48,12 +55,19 @@ class _DetailScreenState extends State<DetailScreen> {
         format: 'point.x',
       ),
     );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    tanggalAwalController.dispose();
+    tanggalAkhirController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final repository = RepositoryProvider.of<FirestoreRepository>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -71,17 +85,16 @@ class _DetailScreenState extends State<DetailScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: StreamBuilder(
-            stream: repository.getHistory(
-              widget.node,
-              widget.docid,
-              widget.tanggal,
-            ),
+            stream: stream,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
+              }
+              if (!snapshot.hasData) {
+                return const Center(child: Text('No data'));
               }
 
               var data = snapshot.data!.docs

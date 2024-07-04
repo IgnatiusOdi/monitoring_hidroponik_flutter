@@ -1,18 +1,32 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/tanaman.dart';
+import '../../models/data.dart';
 import '../../repository/realtimedb_repository.dart';
 
-class Panen extends StatelessWidget {
+class Panen extends StatefulWidget {
   final String node;
-  final RealtimedbRepository repository;
 
-  const Panen({super.key, required this.node, required this.repository});
+  const Panen({super.key, required this.node});
+
+  @override
+  State<Panen> createState() => _PanenState();
+}
+
+class _PanenState extends State<Panen> {
+  late Stream<DatabaseEvent> stream;
+
+  @override
+  void initState() {
+    stream = context.read<RealtimedbRepository>().getStreamNode(widget.node);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: repository.getStreamNode('$node/tanaman'),
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -20,11 +34,14 @@ class Panen extends StatelessWidget {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         }
+        if (!snapshot.hasData) {
+          return const Center(child: Text('No data'));
+        }
 
-        var data = TanamanData.fromJson(
+        var data = Data.fromJson(
             snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
-        final diff1 = data.panen1?.difference(DateTime.now()).inDays;
-        final diff2 = data.panen2?.difference(DateTime.now()).inDays;
+        final diff1 = data.tanaman!.panen1!.difference(DateTime.now()).inDays;
+        final diff2 = data.tanaman!.panen2!.difference(DateTime.now()).inDays;
 
         return Container(
           margin: const EdgeInsets.all(8),
@@ -36,19 +53,19 @@ class Panen extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                node,
+                widget.node,
                 style: const TextStyle(fontSize: 24),
               ),
               Text(
-                data.jenis!,
+                data.tanaman!.jenis!,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 32,
                 ),
               ),
-              diff2! <= 0
+              diff2 <= 0
                   ? const Text('Siap Panen', style: TextStyle(fontSize: 24))
-                  : diff1! <= 0
+                  : diff1 <= 0
                       ? Text(
                           'Bisa Panen hingga $diff2 hari',
                           style: const TextStyle(fontSize: 24),

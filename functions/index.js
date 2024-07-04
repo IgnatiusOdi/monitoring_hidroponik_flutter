@@ -1,12 +1,41 @@
 // The Cloud Functions for Firebase SDK to setup triggers and logging.
-const {initializeApp} = require("firebase-admin/app");
-const {getMessaging} = require("firebase-admin/messaging");
-const {log} = require("firebase-functions/logger");
-const {onValueUpdated} = require("firebase-functions/v2/database");
+const { initializeApp } = require("firebase-admin/app");
+const { getMessaging } = require("firebase-admin/messaging");
+const { log } = require("firebase-functions/logger");
+const { onValueUpdated } = require("firebase-functions/v2/database");
 
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 initializeApp();
 const messaging = getMessaging();
+
+exports.logData = onValueUpdated(
+  {
+    ref: "/{node}/data",
+    instance: "hidroponik-flutter-default-rtdb",
+    region: "asia-southeast1",
+  },
+  (event) => {
+    const node = event.params.node;
+    const data = event.data.after.val();
+
+    const ph = data.split(",")[0];
+    const ppm = data.split(",")[1];
+    const suhu = data.split(",")[2];
+
+    log("Node: ", node);
+    log("Data: ", data);
+
+    // FCM
+    const payload = {
+      notification: {
+        title: `Data ${node}`,
+        body: `${data}`,
+      },
+      topic: "hidroponik-flutter",
+    };
+    messaging.send(payload);
+  }
+);
 
 exports.logPh = onValueUpdated(
   {
@@ -15,10 +44,6 @@ exports.logPh = onValueUpdated(
     region: "asia-southeast1",
   },
   (event) => {
-    if (event.data.before.val() == event.data.after.val()) {
-      return;
-    }
-
     const node = event.params.node;
     const ph = event.data.after.val();
 
@@ -38,6 +63,34 @@ exports.logPh = onValueUpdated(
     }
   }
 );
+
+exports.logTinggiAir = onValueUpdated(
+  {
+    ref: "/{node}/tinggiAir",
+    instance: "hidroponik-flutter-default-rtdb",
+    region: "asia-southeast1",
+  },
+  (event) => {
+    const node = event.params.node;
+    const tinggiAir = event.data.after.val();
+
+    if (tinggiAir == 0) {
+      log("Node: ", node);
+      log("Tinggi Air: ", tinggiAir);
+
+      // FCM
+      const payload = {
+        notification: {
+          title: `Tinggi Air ${node}`,
+          body: `${tinggiAir}`,
+        },
+        topic: "hidroponik-flutter",
+      };
+      messaging.send(payload);
+    }
+  }
+);
+
 
 // exports.logPpm = onValueUpdated(
 //   {
@@ -95,30 +148,3 @@ exports.logPh = onValueUpdated(
 //   }
 // );
 
-// exports.logTinggiAir = onValueUpdated(
-//   {
-//     ref: "/{node}/tinggiAir",
-//     instance: "hidroponik-flutter-default-rtdb",
-//     region: "asia-southeast1",
-//   },
-//   (event) => {
-//     const node = event.params.node;
-//     const tinggiAir = event.data.after.val();
-
-//     if (tinggiAir == 0) {
-//       log("Node: ", node);
-//       log("Tinggi Air: ", tinggiAir);
-
-//       // FCM
-//       const payload = {
-//         notification: {
-//           title: `Tinggi Air ${node}`,
-//           body: `${tinggiAir}`,
-//           image: "../assets/icon.png",
-//         },
-//         topic: "hidroponik-flutter",
-//       };
-//       messaging.send(payload);
-//     }
-//   }
-// );

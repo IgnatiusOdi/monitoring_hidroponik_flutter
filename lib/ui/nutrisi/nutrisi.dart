@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,32 +10,41 @@ import 'nutrisi_slider.dart';
 
 class Nutrisi extends StatefulWidget {
   final String node;
-  final RealtimedbRepository repository;
 
-  const Nutrisi({super.key, required this.node, required this.repository});
+  const Nutrisi({super.key, required this.node});
 
   @override
   State<Nutrisi> createState() => _NutrisiState();
 }
 
 class _NutrisiState extends State<Nutrisi> {
+  late Stream<DatabaseEvent> stream;
   bool loading = false;
   bool success = false;
+
+  @override
+  void initState() {
+    stream = context.read<RealtimedbRepository>().getStreamNode(widget.node);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final double width = MediaQuery.of(context).size.width;
-    final mqttRepository = RepositoryProvider.of<MqttRepository>(context);
+    final mqttRepository = context.read<MqttRepository>();
 
     return StreamBuilder(
-      stream: widget.repository.getStreamNode(widget.node),
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text('No data'));
         }
 
         var data = Data.fromJson(

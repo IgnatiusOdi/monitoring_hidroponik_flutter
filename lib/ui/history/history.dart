@@ -1,24 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:monitoring_hidroponik_flutter/repository/firestore_repository.dart';
 
-import '../../repository/firestore_repository.dart';
-
-class History extends StatelessWidget {
+class History extends StatefulWidget {
   final String node;
-  final FirestoreRepository repository;
 
-  const History({super.key, required this.node, required this.repository});
+  const History({super.key, required this.node});
+
+  @override
+  State<History> createState() => _HistoryState();
+}
+
+class _HistoryState extends State<History> {
+  late Stream<QuerySnapshot<Map<String, dynamic>>> stream;
+
+  @override
+  initState() {
+    stream = context.read<FirestoreRepository>().getNode(widget.node);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: repository.getNode(node),
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text('No data'));
         }
 
         var data = snapshot.data!.docs.map((e) => e.data()).toList();
@@ -48,7 +64,7 @@ class History extends StatelessWidget {
               onTap: () {
                 context.goNamed(
                   'detail',
-                  pathParameters: {'node': node, 'docid': doc.id},
+                  pathParameters: {'node': widget.node, 'docid': doc.id},
                   extra: doc.data()['tanggal'],
                 );
               },

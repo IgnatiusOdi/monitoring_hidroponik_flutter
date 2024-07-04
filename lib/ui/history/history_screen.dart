@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../repository/firestore_repository.dart';
@@ -11,7 +10,6 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final repository = RepositoryProvider.of<FirestoreRepository>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -24,23 +22,23 @@ class HistoryScreen extends StatelessWidget {
           title: const Text('History'),
           foregroundColor: theme.colorScheme.surface,
           backgroundColor: theme.primaryColor),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'node1',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
-              History(node: r'node1', repository: repository),
-              const Divider(),
-              const Text(
+              History(node: r'node1'),
+              Divider(),
+              Text(
                 'node2',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
-              History(node: r'node2', repository: repository),
+              History(node: r'node2'),
             ],
           ),
         ),

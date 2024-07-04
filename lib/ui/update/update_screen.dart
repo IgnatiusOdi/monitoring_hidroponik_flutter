@@ -16,16 +16,23 @@ class UpdateScreen extends StatefulWidget {
 }
 
 class _UpdateScreenState extends State<UpdateScreen> {
+  late FirestoreRepository firestoreRepository;
+  late RealtimedbRepository realtimedbRepository;
+
   String? node;
   Tanaman? selectedTanaman;
   bool loading = false, error = false, success = false;
 
   @override
+  void initState() {
+    firestoreRepository = context.read<FirestoreRepository>();
+    realtimedbRepository = context.read<RealtimedbRepository>();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final firestoreRepository =
-        RepositoryProvider.of<FirestoreRepository>(context);
-    final dbRepository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
@@ -108,7 +115,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                       error = false;
                     });
 
-                    var data = await dbRepository.getNode(node!);
+                    var data = await realtimedbRepository.getFutureNode(node!);
 
                     // Add to Cloud Firestore
                     firestoreRepository.addLog(
@@ -118,7 +125,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     );
 
                     // Update Tanaman
-                    await dbRepository
+                    await realtimedbRepository
                         .updateTanaman(node!, selectedTanaman!)
                         .then((_) => setState(() {
                               loading = false;

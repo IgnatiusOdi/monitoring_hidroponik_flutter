@@ -18,7 +18,7 @@ class LayoutScreen extends StatefulWidget {
 class _LayoutScreenState extends State<LayoutScreen> {
   int _selectedIndex = 0;
 
-  final List<dynamic> _pages = [
+  late final List<Widget> _pages = [
     const HomeScreen(),
     const NutrisiScreen(),
     const PanenScreen(),

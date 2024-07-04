@@ -1,4 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -14,14 +16,12 @@ class Graph extends StatefulWidget {
   final String page;
 
   final String node;
-  final RealtimedbRepository repository;
 
   const Graph({
     super.key,
     required this.page,
     required this.title,
     required this.node,
-    required this.repository,
   });
 
   @override
@@ -29,6 +29,8 @@ class Graph extends StatefulWidget {
 }
 
 class _GraphState extends State<Graph> {
+  late Stream<DatabaseEvent> stream;
+
   late ZoomPanBehavior _zoomPanBehavior;
   late TrackballBehavior _trackballBehavior;
   final tanggalAwalController = TextEditingController();
@@ -36,7 +38,7 @@ class _GraphState extends State<Graph> {
 
   @override
   void initState() {
-    super.initState();
+    stream = context.read<RealtimedbRepository>().getStreamNode(widget.node);
     _zoomPanBehavior = ZoomPanBehavior(
       enableMouseWheelZooming: true,
       enablePinching: true,
@@ -53,18 +55,29 @@ class _GraphState extends State<Graph> {
         format: 'point.x',
       ),
     );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    tanggalAwalController.dispose();
+    tanggalAkhirController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: widget.repository.getStreamNode(widget.node),
+      stream: stream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData) {
+          return const Center(child: Text('No data'));
         }
 
         var data = Data.fromJson(

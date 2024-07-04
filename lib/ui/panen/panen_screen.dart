@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/tanaman.dart';
-import '../../repository/realtimedb_repository.dart';
 import 'panen.dart';
 
 class PanenScreen extends StatelessWidget {
@@ -11,7 +9,6 @@ class PanenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
 
     return Scaffold(
       body: Padding(
@@ -25,17 +22,17 @@ class PanenScreen extends StatelessWidget {
               ),
               const Divider(),
               width > 475
-                  ? Row(
+                  ? const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Panen(node: r'node1', repository: repository),
-                        Panen(node: r'node2', repository: repository),
+                        Panen(node: r'node1'),
+                        Panen(node: r'node2'),
                       ],
                     )
-                  : Column(
+                  : const Column(
                       children: [
-                        Panen(node: r'node1', repository: repository),
-                        Panen(node: r'node2', repository: repository),
+                        Panen(node: r'node1'),
+                        Panen(node: r'node2'),
                       ],
                     ),
               const Divider(),

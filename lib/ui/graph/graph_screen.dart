@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../repository/realtimedb_repository.dart';
 import 'graph.dart';
 
 class GraphScreen extends StatelessWidget {
   final String node;
   final String page;
 
-  const GraphScreen({super.key, required this.node, required this.page});
+  const GraphScreen({
+    super.key,
+    required this.node,
+    required this.page,
+  });
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final repository = RepositoryProvider.of<RealtimedbRepository>(context);
     String title = page == 'ph'
         ? 'pH Air $node'
         : page == 'ppm'
@@ -36,7 +37,10 @@ class GraphScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Graph(
-              page: page, title: title, node: node, repository: repository),
+            page: page,
+            title: title,
+            node: node,
+          ),
         ),
       ),
     );
