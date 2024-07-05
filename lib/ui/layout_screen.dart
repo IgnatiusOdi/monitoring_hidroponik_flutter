@@ -35,60 +35,67 @@ class _LayoutScreenState extends State<LayoutScreen> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Monitoring Hidroponik'),
-        foregroundColor: theme.colorScheme.surface,
-        backgroundColor: theme.primaryColor,
-        actions: [
-          IconButton(
-            tooltip: 'History',
-            color: theme.colorScheme.surface,
-            icon: const Icon(Icons.assignment),
-            onPressed: () {
-              context.goNamed('history');
-            },
-          ),
-          IconButton(
-            tooltip: 'Logout',
-            color: theme.colorScheme.surface,
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<LoginBloc>().add(SignOut());
-            },
-          )
-        ],
-      ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: theme.primaryColor,
-        unselectedItemColor: theme.colorScheme.secondary,
-        type: BottomNavigationBarType.shifting,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            tooltip: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.water_drop),
-            label: 'Nutrisi',
-            tooltip: 'Nutrisi',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.compost),
-            label: 'Panen',
-            tooltip: 'Panen',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.update),
-            label: 'Update',
-            tooltip: 'Update',
-          ),
-        ],
+    return BlocListener<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (!state.status) {
+          context.goNamed('login');
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Monitoring Hidroponik'),
+          foregroundColor: theme.colorScheme.surface,
+          backgroundColor: theme.primaryColor,
+          actions: [
+            IconButton(
+              tooltip: 'History',
+              color: theme.colorScheme.surface,
+              icon: const Icon(Icons.assignment),
+              onPressed: () {
+                context.goNamed('history');
+              },
+            ),
+            IconButton(
+              tooltip: 'Logout',
+              color: theme.colorScheme.surface,
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                context.read<LoginBloc>().add(SignOut());
+              },
+            )
+          ],
+        ),
+        body: _pages[_selectedIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 0,
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: theme.primaryColor,
+          unselectedItemColor: theme.colorScheme.secondary,
+          type: BottomNavigationBarType.shifting,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+              tooltip: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.water_drop),
+              label: 'Nutrisi',
+              tooltip: 'Nutrisi',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.compost),
+              label: 'Panen',
+              tooltip: 'Panen',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.update),
+              label: 'Update',
+              tooltip: 'Update',
+            ),
+          ],
+        ),
       ),
     );
   }

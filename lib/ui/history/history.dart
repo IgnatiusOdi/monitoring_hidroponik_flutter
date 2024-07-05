@@ -14,64 +14,59 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  late Stream<QuerySnapshot<Map<String, dynamic>>> stream;
+  List<QueryDocumentSnapshot>? docs;
+
+  void getData() async {
+    await context
+        .read<FirestoreRepository>()
+        .getFutureNode(widget.node)
+        .then((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          docs = snapshot.docs;
+        });
+      }
+    });
+  }
 
   @override
   initState() {
-    stream = context.read<FirestoreRepository>().getNode(widget.node);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: Text('No data'));
-        }
+    return docs != null
+        ? ListView.builder(
+            shrinkWrap: true,
+            itemCount: docs!.length,
+            itemBuilder: (context, index) {
+              final doc = docs![index];
 
-        var data = snapshot.data!.docs.map((e) => e.data()).toList();
-        data.sort((a, b) => a['tanggal'].compareTo(b['tanggal']));
-
-        if (data.isEmpty) {
-          return const Text(
+              return ListTile(
+                title: Row(
+                  children: [
+                    Text('${doc['tanaman']} - ${doc['tanggal']}'),
+                    const Spacer(),
+                    const Icon(Icons.arrow_forward),
+                  ],
+                ),
+                onTap: () {
+                  context.goNamed(
+                    'detail',
+                    pathParameters: {'node': widget.node, 'docid': doc.id},
+                    extra: doc['tanggal'],
+                  );
+                },
+              );
+            },
+          )
+        : const Text(
             'Tidak ada history',
             style: TextStyle(fontSize: 18),
           );
-        }
-
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            var doc = snapshot.data!.docs[index];
-
-            return ListTile(
-              title: Row(
-                children: [
-                  Text('${doc.data()['tanaman']} - ${doc.data()['tanggal']}'),
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward),
-                ],
-              ),
-              onTap: () {
-                context.goNamed(
-                  'detail',
-                  pathParameters: {'node': widget.node, 'docid': doc.id},
-                  extra: doc.data()['tanggal'],
-                );
-              },
-            );
-          },
-        );
-      },
-    );
   }
 }

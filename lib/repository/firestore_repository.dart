@@ -5,8 +5,13 @@ import 'package:monitoring_hidroponik_flutter/models/data.dart';
 class FirestoreRepository {
   final _firestore = FirebaseFirestore.instance;
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getNode(String node) {
-    return _firestore.collection(node).snapshots();
+  Future<QuerySnapshot> getFutureNode(String node) {
+    return _firestore.collection(node).orderBy('tanggal').get();
+  }
+
+  Future<QuerySnapshot> getFutureHistory(
+      String node, String docid, String tanggal) {
+    return _firestore.collection(node).doc(docid).collection(tanggal).get();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getHistory(

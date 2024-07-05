@@ -1,8 +1,7 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/tanaman.dart';
+import '../../models/data.dart';
 import '../../repository/realtimedb_repository.dart';
 
 class Panen extends StatefulWidget {
@@ -15,71 +14,72 @@ class Panen extends StatefulWidget {
 }
 
 class _PanenState extends State<Panen> {
-  late Stream<DatabaseEvent> stream;
+  Data? data;
+  int? diff1;
+  int? diff2;
+
+  void getData() async {
+    await context
+        .read<RealtimedbRepository>()
+        .getFutureNode(widget.node)
+        .then((snapshot) {
+      if (snapshot.snapshot.value != null) {
+        setState(() {
+          data =
+              Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
+          diff1 = data!.tanaman!.panen1!.difference(DateTime.now()).inDays;
+          diff2 = data!.tanaman!.panen2!.difference(DateTime.now()).inDays;
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
-    stream = context
-        .read<RealtimedbRepository>()
-        .getStreamNode('${widget.node}/tanaman');
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: Text('No data'));
-        }
-
-        var data = TanamanData.fromJson(
-            snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
-        final diff1 = data.panen1!.difference(DateTime.now()).inDays;
-        final diff2 = data.panen2!.difference(DateTime.now()).inDays;
-
-        return Container(
-          margin: const EdgeInsets.all(8),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            children: [
-              Text(
-                widget.node,
-                style: const TextStyle(fontSize: 24),
-              ),
-              Text(
-                data.jenis!,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32,
+    return data != null
+        ? Container(
+            margin: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border.all(),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  widget.node,
+                  style: const TextStyle(fontSize: 24),
                 ),
-              ),
-              diff2 <= 0
-                  ? const Text('Siap Panen', style: TextStyle(fontSize: 24))
-                  : diff1 <= 0
-                      ? Text(
-                          'Bisa Panen hingga $diff2 hari',
-                          style: const TextStyle(fontSize: 24),
-                        )
-                      : Text(
-                          '$diff1 - $diff2 hari',
-                          style: const TextStyle(fontSize: 24),
-                        )
-            ],
-          ),
-        );
-      },
-    );
+                Text(
+                  data!.tanaman!.jenis!,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                  ),
+                ),
+                if (diff2! <= 0)
+                  const Text('Siap Panen', style: TextStyle(fontSize: 24))
+                else if (diff1! <= 0)
+                  Text(
+                    'Bisa Panen hingga $diff2 hari',
+                    style: const TextStyle(fontSize: 24),
+                  )
+                else
+                  Text(
+                    '$diff1 - $diff2 hari',
+                    style: const TextStyle(fontSize: 24),
+                  )
+              ],
+            ),
+          )
+        : const Center(child: CircularProgressIndicator());
   }
 }

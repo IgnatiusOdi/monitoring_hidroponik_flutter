@@ -1,4 +1,3 @@
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,12 +15,34 @@ class Status extends StatefulWidget {
 }
 
 class _StatusState extends State<Status> {
-  late Stream<DatabaseEvent> stream;
+  Data? data;
+  double? ph;
+  int? ppm;
+  double? suhu;
+
+  void getData() {
+    context
+        .read<RealtimedbRepository>()
+        .getStreamNode(widget.node)
+        .listen((snapshot) {
+      if (snapshot.snapshot.value != null) {
+        setState(() {
+          data =
+              Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
+          ph = double.parse(data!.data!.last.value!.split(',')[0]);
+          ppm = int.parse(data!.data!.last.value!.split(',')[1]);
+          suhu = double.parse(data!.data!.last.value!.split(',')[2]);
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
-    stream = context.read<RealtimedbRepository>().getStreamNode(widget.node);
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getData();
+    });
   }
 
   @override
@@ -30,112 +51,93 @@ class _StatusState extends State<Status> {
     final double width = MediaQuery.of(context).size.width;
     final double height = MediaQuery.of(context).size.height;
 
-    return StreamBuilder(
-      stream: stream,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        }
-        if (!snapshot.hasData) {
-          return const Center(child: Text('No data'));
-        }
+    return data != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(widget.node,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      decoration: TextDecoration.underline)),
+              Row(children: [
+                const Text('Ketinggian Air: ', style: TextStyle(fontSize: 24)),
+                Container(
+                  width: 20,
+                  height: 20,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                      color: data!.tinggiAir == 1
+                          ? theme.primaryColor
+                          : Colors.red,
+                      shape: BoxShape.circle),
+                ),
+                Text(
+                  data!.tinggiAir == 1 ? 'Aman' : 'Tidak Aman',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+              ]),
+              GridView.count(
+                  crossAxisCount: width > 475 ? 3 : 2,
+                  childAspectRatio: width / (height / 2),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    StatusCard(theme.colorScheme.primaryContainer, widget.node,
+                        'ph', 'pH Air', ph),
+                    StatusCard(theme.colorScheme.primaryContainer, widget.node,
+                        'ppm', 'Kadar PPM', ppm),
+                    StatusCard(theme.colorScheme.primaryContainer, widget.node,
+                        'suhu', 'Suhu Air', '$suhu \u00B0C'),
+                  ]),
+              Card(
+                color: theme.colorScheme.primaryContainer,
+                child: SizedBox(
+                  width: width,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Notifikasi',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
 
-        var data = Data.fromJson(
-            snapshot.data!.snapshot.value as Map<dynamic, dynamic>);
+                          // TINGGI AIR
+                          data!.tinggiAir == 0
+                              ? NotifikasiCard('Ketinggian Air melewati batas!',
+                                  Colors.redAccent, width)
+                              : Container(),
 
-        var ph = double.parse(data.data!.last.value!.split(',')[0]);
-        var ppm = int.parse(data.data!.last.value!.split(',')[1]);
-        var suhu = double.parse(data.data!.last.value!.split(',')[2]);
+                          // PH
+                          ph! < 5.5 || ph! > 6.5
+                              ? NotifikasiCard('pH Air melewati batas!',
+                                  Colors.yellowAccent, width)
+                              : Container(),
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.node,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24,
-                    decoration: TextDecoration.underline)),
-            Row(children: [
-              const Text('Ketinggian Air: ', style: TextStyle(fontSize: 24)),
-              Container(
-                width: 20,
-                height: 20,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                    color:
-                        data.tinggiAir == 1 ? theme.primaryColor : Colors.red,
-                    shape: BoxShape.circle),
-              ),
-              Text(
-                data.tinggiAir == 1 ? 'Aman' : 'Tidak Aman',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
-            ]),
-            GridView.count(
-                crossAxisCount: width > 475 ? 3 : 2,
-                childAspectRatio: width / (height / 2),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  StatusCard(theme.colorScheme.primaryContainer, widget.node,
-                      'ph', 'pH Air', ph),
-                  StatusCard(theme.colorScheme.primaryContainer, widget.node,
-                      'ppm', 'Kadar PPM', ppm),
-                  StatusCard(theme.colorScheme.primaryContainer, widget.node,
-                      'suhu', 'Suhu Air', '$suhu \u00B0C'),
-                ]),
-            Card(
-              color: theme.colorScheme.primaryContainer,
-              child: SizedBox(
-                width: width,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Notifikasi',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 24),
-                        ),
+                          // PPM
+                          ppm! < data!.tanaman!.ppmMin!.toInt() ||
+                                  ppm! > data!.tanaman!.ppmMax!.toInt()
+                              ? NotifikasiCard('Kadar PPM melewati batas!',
+                                  Colors.yellowAccent, width)
+                              : Container(),
 
-                        // TINGGI AIR
-                        data.tinggiAir == 0
-                            ? NotifikasiCard('Ketinggian Air melewati batas!',
-                                Colors.redAccent, width)
-                            : Container(),
-
-                        // PH
-                        ph < 5.5 || ph > 6.5
-                            ? NotifikasiCard('pH Air melewati batas!',
-                                Colors.yellowAccent, width)
-                            : Container(),
-
-                        // PPM
-                        ppm < data.tanaman!.ppmMin!.toInt() ||
-                                ppm > data.tanaman!.ppmMax!.toInt()
-                            ? NotifikasiCard('Kadar PPM melewati batas!',
-                                Colors.yellowAccent, width)
-                            : Container(),
-
-                        // SUHU
-                        suhu < 20 || suhu > 25
-                            ? NotifikasiCard('Suhu Air melewati batas!',
-                                Colors.redAccent, width)
-                            : Container(),
-                      ]),
+                          // SUHU
+                          suhu! < 20 || suhu! > 25
+                              ? NotifikasiCard('Suhu Air melewati batas!',
+                                  Colors.redAccent, width)
+                              : Container(),
+                        ]),
+                  ),
                 ),
               ),
-            ),
-            const Divider()
-          ],
-        );
-      },
-    );
+              const Divider()
+            ],
+          )
+        : const Center(child: CircularProgressIndicator());
   }
 }
 

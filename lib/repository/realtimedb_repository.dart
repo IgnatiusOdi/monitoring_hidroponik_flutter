@@ -12,22 +12,21 @@ class RealtimedbRepository {
     return _database.ref(node).orderByKey().onValue;
   }
 
-  Future<DatabaseEvent> getFutureNode(String node) {
-    return _database.ref(node).orderByKey().once();
+  Future<DatabaseEvent> getFutureNode(String node) async {
+    return await _database.ref(node).orderByKey().once();
   }
 
   Future<void> updateTanaman(String node, Tanaman tanaman) async {
     try {
-      await _database.ref('$node/data').set({
-        DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()): "0.00,0,0.00"
-      });
+      final now = DateTime.now();
+      final date = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+      await _database.ref('$node/data').set({date: "0.00,0,0.00"});
+
       await _database.ref('$node/tanaman').update({
         'jenis': tanaman.nama.toCapitalize(),
-        'mulai': DateTime.now().toDateString(),
-        'panen1':
-            DateTime.now().add(Duration(days: tanaman.panen1)).toDateString(),
-        'panen2':
-            DateTime.now().add(Duration(days: tanaman.panen2)).toDateString(),
+        'mulai': now.toDateString(),
+        'panen1': now.add(Duration(days: tanaman.panen1)).toDateString(),
+        'panen2': now.add(Duration(days: tanaman.panen2)).toDateString(),
         'ppmMax': tanaman.ppmMax,
         'ppmMin': tanaman.ppmMin,
       });

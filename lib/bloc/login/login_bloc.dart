@@ -42,7 +42,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
         emit(state.copyWith(status: true, loading: false, error: ''));
       } catch (e) {
-        emit(state.copyWith(error: 'Email / Password salah!'));
+        emit(state.copyWith(loading: false, error: 'Email / Password salah!'));
       }
     });
 
