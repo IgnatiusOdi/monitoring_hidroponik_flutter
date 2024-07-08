@@ -19,24 +19,20 @@ class LoginScreen extends StatelessWidget {
             context.goNamed('home');
           }
         },
-        child: BlocBuilder<LoginBloc, LoginState>(
-          builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/icon.png', height: 200),
-                  const SizedBox(height: 16),
-                  EmailInput(theme: theme),
-                  const SizedBox(height: 16),
-                  PasswordInput(theme: theme),
-                  MessageText(theme: theme),
-                  LoginButton(theme: theme),
-                ],
-              ),
-            );
-          },
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/icon.png', height: 200),
+              const SizedBox(height: 16),
+              EmailInput(theme: theme),
+              const SizedBox(height: 16),
+              PasswordInput(theme: theme),
+              MessageText(theme: theme),
+              LoginButton(theme: theme),
+            ],
+          ),
         ),
       ),
     );

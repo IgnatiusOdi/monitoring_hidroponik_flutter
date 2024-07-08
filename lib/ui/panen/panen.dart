@@ -18,11 +18,11 @@ class _PanenState extends State<Panen> {
   int? diff1;
   int? diff2;
 
-  void getData() async {
-    await context
+  void getData() {
+    context
         .read<RealtimedbRepository>()
-        .getFutureNode(widget.node)
-        .then((snapshot) {
+        .getStreamNode(widget.node)
+        .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
         setState(() {
           data =

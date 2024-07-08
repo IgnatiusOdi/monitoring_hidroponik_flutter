@@ -16,19 +16,9 @@ class UpdateScreen extends StatefulWidget {
 }
 
 class _UpdateScreenState extends State<UpdateScreen> {
-  late FirestoreRepository firestoreRepository;
-  late RealtimedbRepository realtimedbRepository;
-
   String? node;
   Tanaman? selectedTanaman;
   bool loading = false, error = false, success = false;
-
-  @override
-  void initState() {
-    firestoreRepository = context.read<FirestoreRepository>();
-    realtimedbRepository = context.read<RealtimedbRepository>();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,29 +98,35 @@ class _UpdateScreenState extends State<UpdateScreen> {
             child: ElevatedButton(
                 onPressed: () async {
                   if (node == null || selectedTanaman == null) {
-                    setState(() => error = true);
+                    setState(() {
+                      error = true;
+                    });
                   } else {
                     setState(() {
                       loading = true;
                       error = false;
                     });
 
-                    var data = await realtimedbRepository.getFutureNode(node!);
+                    var data = await context
+                        .read<RealtimedbRepository>()
+                        .getFutureNode(node!);
 
                     // Add to Cloud Firestore
-                    firestoreRepository.addLog(
-                      node!,
-                      Data.fromJson(
-                          data.snapshot.value as Map<dynamic, dynamic>),
-                    );
+                    await context.read<FirestoreRepository>().addLog(
+                        node!,
+                        Data.fromJson(
+                            data.snapshot.value as Map<dynamic, dynamic>));
 
                     // Update Tanaman
-                    await realtimedbRepository
+                    await context
+                        .read<RealtimedbRepository>()
                         .updateTanaman(node!, selectedTanaman!)
-                        .then((_) => setState(() {
-                              loading = false;
-                              success = true;
-                            }));
+                        .then((_) {
+                      setState(() {
+                        loading = false;
+                        success = true;
+                      });
+                    });
                   }
                 },
                 child: loading

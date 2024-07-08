@@ -85,15 +85,11 @@ getRouterConfig(authenticationRepository) {
         path: '/',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
-        redirect: (context, state) =>
-            (authenticationRepository.user != null) ? '/home' : null,
       ),
       GoRoute(
         path: '/home',
         name: 'home',
         builder: (context, state) => const LayoutScreen(),
-        redirect: (context, state) =>
-            (authenticationRepository.user == null) ? '/' : null,
       ),
       GoRoute(
         path: '/:node/:page',
@@ -102,15 +98,11 @@ getRouterConfig(authenticationRepository) {
           node: state.pathParameters['node']!,
           page: state.pathParameters['page']!,
         ),
-        redirect: (context, state) =>
-            (authenticationRepository.user == null) ? '/' : null,
       ),
       GoRoute(
         path: '/history',
         name: 'history',
         builder: (context, state) => const HistoryScreen(),
-        redirect: (context, state) =>
-            (authenticationRepository.user == null) ? '/' : null,
       ),
       GoRoute(
         path: '/history/:node/:docid',
@@ -120,9 +112,17 @@ getRouterConfig(authenticationRepository) {
           docid: state.pathParameters['docid']!,
           tanggal: state.extra.toString(),
         ),
-        redirect: (context, state) =>
-            (authenticationRepository.user == null) ? '/' : null,
       ),
     ],
+    redirect: (context, state) {
+      if (authenticationRepository.user == null) {
+        return '/';
+      } else if (state.matchedLocation == '/' &&
+          authenticationRepository.user != null) {
+        return '/home';
+      }
+
+      return null;
+    },
   );
 }

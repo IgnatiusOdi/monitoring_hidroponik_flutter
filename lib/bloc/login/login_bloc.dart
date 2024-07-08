@@ -40,7 +40,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           email: state.email,
           password: state.password,
         );
-        emit(state.copyWith(status: true, loading: false, error: ''));
+        emit(state.copyWith(
+          email: '',
+          password: '',
+          status: true,
+          loading: false,
+        ));
       } catch (e) {
         emit(state.copyWith(loading: false, error: 'Email / Password salah!'));
       }
@@ -49,8 +54,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<SignOut>((event, emit) async {
       try {
         await authenticationRepository.signOut();
-        emit(state.copyWith(
-            email: '', password: '', status: false, loading: false, error: ''));
+        emit(state.copyWith(status: false));
       } catch (e) {
         emit(state.copyWith(error: e.toString()));
       }

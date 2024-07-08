@@ -38,11 +38,11 @@ class _GraphState extends State<Graph> {
   final tanggalAwalController = TextEditingController();
   final tanggalAkhirController = TextEditingController();
 
-  void getData() async {
-    await context
+  void getData() {
+    context
         .read<RealtimedbRepository>()
-        .getFutureNode(widget.node)
-        .then((snapshot) {
+        .getStreamNode(widget.node)
+        .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
         setState(() {
           data =
