@@ -251,7 +251,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ],
                   )
                 : const Text(
-                    'Tidak ada history',
+                    'Tidak ada data',
                     style: TextStyle(fontSize: 18),
                   )),
       ),

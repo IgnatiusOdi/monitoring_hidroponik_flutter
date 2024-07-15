@@ -24,6 +24,7 @@ class _PanenState extends State<Panen> {
         .getStreamNode(widget.node)
         .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
+        if (!mounted) return;
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
@@ -32,6 +33,11 @@ class _PanenState extends State<Panen> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

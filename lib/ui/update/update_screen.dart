@@ -18,7 +18,15 @@ class UpdateScreen extends StatefulWidget {
 class _UpdateScreenState extends State<UpdateScreen> {
   String? node;
   Tanaman? selectedTanaman;
-  bool loading = false, error = false, success = false;
+  bool loading = false;
+  bool error = false;
+  bool success = false;
+  String message = "";
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,48 +93,57 @@ class _UpdateScreenState extends State<UpdateScreen> {
               ],
             ),
           ),
-          error
-              ? const Text("Mohon mengisi node dan tanaman",
-                  style: TextStyle(color: Colors.red))
-              : Container(),
-          success
-              ? Text("Berhasil update $node",
-                  style: TextStyle(color: theme.primaryColor))
+          error || success
+              ? Text(message,
+                  style:
+                      TextStyle(color: error ? Colors.red : theme.primaryColor))
               : Container(),
           Align(
             alignment: Alignment.centerRight,
             child: ElevatedButton(
                 onPressed: () async {
+                  if (!mounted) return;
+                  setState(() {
+                    loading = true;
+                    error = false;
+                    success = false;
+                  });
+
                   if (node == null || selectedTanaman == null) {
                     setState(() {
                       error = true;
+                      message = "Mohon mengisi node dan tanaman";
                     });
                   } else {
-                    setState(() {
-                      loading = true;
-                      error = false;
-                    });
+                    try {
+                      var data = await context
+                          .read<RealtimedbRepository>()
+                          .getFutureNode(node!);
 
-                    var data = await context
-                        .read<RealtimedbRepository>()
-                        .getFutureNode(node!);
+                      // Add to Cloud Firestore
+                      await context.read<FirestoreRepository>().addLog(
+                          node!,
+                          Data.fromJson(
+                              data.snapshot.value as Map<dynamic, dynamic>));
 
-                    // Add to Cloud Firestore
-                    await context.read<FirestoreRepository>().addLog(
-                        node!,
-                        Data.fromJson(
-                            data.snapshot.value as Map<dynamic, dynamic>));
-
-                    // Update Tanaman
-                    await context
-                        .read<RealtimedbRepository>()
-                        .updateTanaman(node!, selectedTanaman!)
-                        .then((_) {
+                      // Update Tanaman
+                      await context
+                          .read<RealtimedbRepository>()
+                          .updateTanaman(node!, selectedTanaman!)
+                          .then((_) {
+                        setState(() {
+                          loading = false;
+                          success = true;
+                          message = "Berhasil update $node";
+                        });
+                      });
+                    } catch (e) {
                       setState(() {
                         loading = false;
-                        success = true;
+                        error = true;
+                        message = e.toString();
                       });
-                    });
+                    }
                   }
                 },
                 child: loading

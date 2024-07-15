@@ -26,6 +26,7 @@ class _StatusState extends State<Status> {
         .getStreamNode(widget.node)
         .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
+        if (!mounted) return;
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
@@ -35,6 +36,11 @@ class _StatusState extends State<Status> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -61,7 +67,6 @@ class _StatusState extends State<Status> {
                       fontSize: 24,
                       decoration: TextDecoration.underline)),
               Row(children: [
-                const Text('Ketinggian Air: ', style: TextStyle(fontSize: 24)),
                 Container(
                   width: 20,
                   height: 20,
@@ -72,11 +77,16 @@ class _StatusState extends State<Status> {
                           : Colors.red,
                       shape: BoxShape.circle),
                 ),
-                Text(
-                  data!.tinggiAir == 1 ? 'Aman' : 'Tidak Aman',
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24),
-                ),
+                Expanded(
+                  child: Text(
+                    'Tinggi Air: ${data!.tinggiAir == 1 ? 'Aman' : 'Tidak Aman'}',
+                    style: const TextStyle(
+                      overflow: TextOverflow.clip,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
               ]),
               GridView.count(
                   crossAxisCount: width > 475 ? 3 : 2,
@@ -108,7 +118,7 @@ class _StatusState extends State<Status> {
 
                           // TINGGI AIR
                           data!.tinggiAir == 0
-                              ? NotifikasiCard('Ketinggian Air melewati batas!',
+                              ? NotifikasiCard('Tinggi Air melewati batas!',
                                   Colors.redAccent, width)
                               : Container(),
 

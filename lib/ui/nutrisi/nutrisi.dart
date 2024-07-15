@@ -30,6 +30,7 @@ class _NutrisiState extends State<Nutrisi> {
         .getStreamNode(widget.node)
         .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
+        if (!mounted) return;
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
@@ -38,6 +39,11 @@ class _NutrisiState extends State<Nutrisi> {
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -103,7 +109,7 @@ class _NutrisiState extends State<Nutrisi> {
               Text('PPM saat ini : $ppm', style: const TextStyle(fontSize: 24)),
               loading ? const CircularProgressIndicator() : Container(),
               success
-                  ? Text('Berhasil mengirim perintah',
+                  ? Text('Berhasil mengirimkan perintah',
                       style: TextStyle(fontSize: 20, color: theme.primaryColor))
                   : Container(),
               NutrisiSlider(node: widget.node),

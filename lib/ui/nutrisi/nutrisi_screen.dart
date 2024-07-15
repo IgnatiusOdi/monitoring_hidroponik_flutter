@@ -25,7 +25,7 @@ class NutrisiScreen extends StatelessWidget {
       ),
       floatingActionButton: IconButton(
         onPressed: () {},
-        tooltip: "Mohon ditunggu setelah tambah nutrisi",
+        tooltip: "Mohon ditunggu setelah melakukan tambah nutrisi",
         icon: const Icon(Icons.info),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,

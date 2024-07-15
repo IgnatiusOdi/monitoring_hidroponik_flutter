@@ -44,6 +44,7 @@ class _GraphState extends State<Graph> {
         .getStreamNode(widget.node)
         .listen((snapshot) {
       if (snapshot.snapshot.value != null) {
+        if (!mounted) return;
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
