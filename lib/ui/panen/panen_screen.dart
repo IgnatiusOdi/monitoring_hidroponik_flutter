@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../../models/tanaman.dart';
 import 'panen.dart';
+import '../../utils/string_utils.dart';
 
 class PanenScreen extends StatelessWidget {
   const PanenScreen({super.key});
@@ -70,8 +70,7 @@ class PanenScreen extends StatelessWidget {
                         TableCell(
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: Text(
-                                '${tanaman.nama.characters.first.toUpperCase()}${tanaman.nama.characters.skip(1)}',
+                            child: Text(tanaman.nama.toCapitalize(),
                                 style: const TextStyle(fontSize: 16)),
                           ),
                         ),
