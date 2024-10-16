@@ -95,11 +95,7 @@ class _GraphState extends State<Graph> {
         ? Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-              ),
+              Text(widget.title, style: const TextStyle(fontSize: 24)),
               Text(
                 widget.page == 'ph'
                     ? ph!

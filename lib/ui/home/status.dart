@@ -19,6 +19,7 @@ class _StatusState extends State<Status> {
   double? ph;
   int? ppm;
   double? suhu;
+  int? umur;
 
   void getData() {
     context
@@ -33,6 +34,7 @@ class _StatusState extends State<Status> {
           ph = double.parse(data!.data!.last.value!.split(',')[0]);
           ppm = int.parse(data!.data!.last.value!.split(',')[1]);
           suhu = double.parse(data!.data!.last.value!.split(',')[2]);
+          umur = data!.tanaman!.mulai!.difference(DateTime.now()).inDays.abs();
         });
       }
     });
@@ -61,45 +63,28 @@ class _StatusState extends State<Status> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.node,
+              Text(widget.node, style: const TextStyle(fontSize: 20)),
+              Text('${data!.tanaman!.jenis} - $umur hari',
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                      decoration: TextDecoration.underline)),
-              Row(children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  margin: const EdgeInsets.only(right: 8),
-                  decoration: BoxDecoration(
-                      color: data!.tinggiAir == 1
-                          ? theme.primaryColor
-                          : Colors.red,
-                      shape: BoxShape.circle),
-                ),
-                Expanded(
-                  child: Text(
-                    'Tinggi Air: ${data!.tinggiAir == 1 ? 'Aman' : 'Tidak Aman'}',
-                    style: const TextStyle(
-                      overflow: TextOverflow.clip,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )
-              ]),
+                      fontWeight: FontWeight.bold, fontSize: 28)),
               GridView.count(
-                  crossAxisCount: width > 475 ? 3 : 2,
+                  crossAxisCount: width > 900 ? 4 : 2,
                   childAspectRatio: width / (height / 2),
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    StatusCard(theme.colorScheme.primaryContainer, widget.node,
-                        'ph', 'pH Air', ph),
+                    StatusCard(
+                        theme.colorScheme.primaryContainer,
+                        widget.node,
+                        '',
+                        'Tinggi Air',
+                        data!.tinggiAir == 1 ? 'Aman' : 'Tidak Aman'),
                     StatusCard(theme.colorScheme.primaryContainer, widget.node,
                         'ppm', 'Kadar PPM', ppm),
                     StatusCard(theme.colorScheme.primaryContainer, widget.node,
                         'suhu', 'Suhu Air', '$suhu \u00B0C'),
+                    StatusCard(theme.colorScheme.primaryContainer, widget.node,
+                        'ph', 'pH Air', ph),
                   ]),
               Card(
                 color: theme.colorScheme.primaryContainer,
@@ -110,11 +95,8 @@ class _StatusState extends State<Status> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Notifikasi',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24),
-                          ),
+                          const Text('Notifikasi',
+                              style: TextStyle(fontSize: 20)),
 
                           // TINGGI AIR
                           data!.tinggiAir == 0
@@ -129,14 +111,13 @@ class _StatusState extends State<Status> {
                               : Container(),
 
                           // PPM
-                          ppm! < data!.tanaman!.ppmMin!.toInt() ||
-                                  ppm! > data!.tanaman!.ppmMax!.toInt()
+                          ppm! < data!.tanaman!.ppmMin!.toInt()
                               ? NotifikasiCard('Kadar PPM melewati batas!',
                                   Colors.yellowAccent, width)
                               : Container(),
 
                           // SUHU
-                          suhu! < 20 || suhu! > 25
+                          suhu! < 20 || suhu! > 30
                               ? NotifikasiCard('Suhu Air melewati batas!',
                                   Colors.redAccent, width)
                               : Container(),
@@ -166,27 +147,40 @@ class StatusCard extends StatelessWidget {
     return Card(
       color: color,
       clipBehavior: Clip.hardEdge,
-      child: InkWell(
-        splashColor: Colors.blue.withAlpha(30),
-        onTap: () {
-          context.goNamed(
-            'graph',
-            pathParameters: {'node': node, 'page': page},
-          );
-        },
-        child: SizedBox(
-          width: 150,
-          height: 100,
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-            Text('$data',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 32)),
-          ]),
+      child: page != ''
+          ? InkWell(
+              splashColor: Colors.blue.withAlpha(30),
+              onTap: () {
+                context.goNamed(
+                  'graph',
+                  pathParameters: {'node': node, 'page': page},
+                );
+              },
+              child: StatusBox(title, data),
+            )
+          : StatusBox(title, data),
+    );
+  }
+}
+
+class StatusBox extends StatelessWidget {
+  final String title;
+  final dynamic data;
+
+  const StatusBox(this.title, this.data, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 150,
+      height: 100,
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(title, style: const TextStyle(fontSize: 20)),
+        Text(
+          '$data',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
         ),
-      ),
+      ]),
     );
   }
 }
@@ -208,7 +202,10 @@ class NotifikasiCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Align(
             alignment: Alignment.centerLeft,
-            child: Text(message),
+            child: Text(
+              message,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),

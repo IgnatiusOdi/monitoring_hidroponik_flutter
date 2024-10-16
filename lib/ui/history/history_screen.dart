@@ -27,16 +27,10 @@ class HistoryScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'node1',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-              ),
+              Text('node1', style: TextStyle(fontSize: 20)),
               History(node: r'node1'),
               Divider(),
-              Text(
-                'node2',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-              ),
+              Text('node2', style: TextStyle(fontSize: 20)),
               History(node: r'node2'),
             ],
           ),

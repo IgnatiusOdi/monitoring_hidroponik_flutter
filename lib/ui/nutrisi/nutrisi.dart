@@ -63,14 +63,10 @@ class _NutrisiState extends State<Nutrisi> {
     return data != null
         ? Column(
             children: [
-              Text(
-                widget.node,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
+              Text(widget.node, style: const TextStyle(fontSize: 20)),
               const Text(
-                r'Nutrisi Terakhir Ditambahkan :',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                r'Nutrisi terakhir ditambahkan :',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               Text(
                 diff == 0 ? 'HARI INI' : '$diff HARI yang lalu',
@@ -106,7 +102,8 @@ class _NutrisiState extends State<Nutrisi> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
-              Text('PPM saat ini : $ppm', style: const TextStyle(fontSize: 24)),
+              Text('Kadar PPM saat ini : $ppm',
+                  style: const TextStyle(fontSize: 24)),
               loading ? const CircularProgressIndicator() : Container(),
               success
                   ? Text('Berhasil mengirimkan perintah',

@@ -71,18 +71,18 @@ class PanenScreen extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(tanaman.nama.toCapitalize(),
-                                style: const TextStyle(fontSize: 16)),
+                                style: const TextStyle(fontSize: 20)),
                           ),
                         ),
                         TableCell(
                             child: Text('${tanaman.ppmMin} - ${tanaman.ppmMax}',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16))),
+                                style: const TextStyle(fontSize: 20))),
                         TableCell(
                             child: Text(
                                 '${tanaman.panen1} - ${tanaman.panen2} hari',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 16)))
+                                style: const TextStyle(fontSize: 20)))
                       ],
                     ),
                 ],

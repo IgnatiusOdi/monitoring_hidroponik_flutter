@@ -49,7 +49,9 @@ class _HistoryState extends State<History> {
               return ListTile(
                 title: Row(
                   children: [
-                    Text('${doc['tanaman']} - ${doc['tanggal']}'),
+                    Text('\u2022 ${doc['tanaman']} - ${doc['tanggal']}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
                     const Spacer(),
                     const Icon(Icons.arrow_forward),
                   ],
@@ -66,7 +68,7 @@ class _HistoryState extends State<History> {
           )
         : const Text(
             'Tidak ada history',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 24),
           );
   }
 }
