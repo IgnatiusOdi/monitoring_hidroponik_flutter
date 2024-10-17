@@ -31,10 +31,13 @@ class _StatusState extends State<Status> {
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
+          data!.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
+
           ph = double.parse(data!.data!.last.value!.split(',')[0]);
           ppm = int.parse(data!.data!.last.value!.split(',')[1]);
           suhu = double.parse(data!.data!.last.value!.split(',')[2]);
-          umur = data!.tanaman!.mulai!.difference(DateTime.now()).inDays.abs();
+          umur =
+              data!.tanaman!.mulai!.difference(DateTime.now()).inDays.abs() + 1;
         });
       }
     });
@@ -178,6 +181,7 @@ class StatusBox extends StatelessWidget {
         Text(title, style: const TextStyle(fontSize: 20)),
         Text(
           '$data',
+          textAlign: TextAlign.center,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
         ),
       ]),

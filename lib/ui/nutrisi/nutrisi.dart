@@ -34,6 +34,8 @@ class _NutrisiState extends State<Nutrisi> {
         setState(() {
           data =
               Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
+          data!.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
+
           diff = DateTime.now().difference(data!.penambahanPPM!).inDays;
           ppm = int.parse(data!.data!.last.value!.split(',')[1]);
         });
