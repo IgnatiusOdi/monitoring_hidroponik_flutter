@@ -11,7 +11,7 @@ class NutrisiSlider extends StatefulWidget {
 }
 
 class _NutrisiSliderState extends State<NutrisiSlider> {
-  double _value = 560;
+  double _value = 600;
 
   @override
   void initState() {
@@ -35,9 +35,9 @@ class _NutrisiSliderState extends State<NutrisiSlider> {
   Widget build(BuildContext context) {
     return Slider(
       value: _value,
-      min: 560,
+      min: 600,
       max: 1000,
-      divisions: 44,
+      divisions: 8,
       label: _value.round().toString(),
       onChanged: (double value) async {
         setState(() {

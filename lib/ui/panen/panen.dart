@@ -60,10 +60,7 @@ class _PanenState extends State<Panen> {
             ),
             child: Column(
               children: [
-                Text(
-                  widget.node,
-                  style: const TextStyle(fontSize: 20),
-                ),
+                Text(widget.node, style: const TextStyle(fontSize: 20)),
                 Text(
                   data!.tanaman!.jenis!,
                   style: const TextStyle(
