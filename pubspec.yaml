@@ -1,5 +1,6 @@
 name: monitoring_hidroponik_flutter
-description: "TA Sistem Monitoring Instalasi Hidroponik menggunakan LoRaWAN dan Framework Flutter"
+description: "TA Sistem Monitoring Instalasi Hidroponik
+  menggunakan LoRaWAN dan Framework Flutter"
 publish_to: "none"
 version: 1.0.0+1
 

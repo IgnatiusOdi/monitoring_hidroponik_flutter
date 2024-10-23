@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'status.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,7 +14,9 @@ class HomeScreen extends StatelessWidget {
             children: [
               Text(
                 'STATUS',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28),
               ),
               Divider(),
               Status(node: r'node1'),

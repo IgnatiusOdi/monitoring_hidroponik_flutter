@@ -13,7 +13,8 @@ class AuthenticationRepository {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw LogInWithEmailAndPasswordFailure.fromCode(e.code);
+      throw LogInWithEmailAndPasswordFailure.fromCode(
+          e.code);
     } catch (_) {
       throw const LogInWithEmailAndPasswordFailure();
     }
@@ -26,14 +27,16 @@ class AuthenticationRepository {
   User? get user => _firebaseAuth.currentUser;
 }
 
-class LogInWithEmailAndPasswordFailure implements Exception {
+class LogInWithEmailAndPasswordFailure
+    implements Exception {
   final String message;
 
   const LogInWithEmailAndPasswordFailure([
     this.message = 'An unknown exception occurred.',
   ]);
 
-  factory LogInWithEmailAndPasswordFailure.fromCode(String code) {
+  factory LogInWithEmailAndPasswordFailure.fromCode(
+      String code) {
     switch (code) {
       case 'invalid-email':
         return const LogInWithEmailAndPasswordFailure(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_strategy/url_strategy.dart';
-
 import 'bloc/login/login_bloc.dart';
 import 'repository/authentication_repository.dart';
 import 'repository/firestore_repository.dart';
@@ -21,16 +20,16 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) {
     await MessagingRepository().initNotifications();
   }
   setPathUrlStrategy();
-
-  final authenticationRepository = AuthenticationRepository();
+  final authenticationRepository =
+      AuthenticationRepository();
   final firestoreRepository = FirestoreRepository();
   final realtimedbRepository = RealtimedbRepository();
-
   runApp(App(
     authenticationRepository: authenticationRepository,
     firestoreRepository: firestoreRepository,
@@ -39,7 +38,8 @@ Future<void> main() async {
 }
 
 final class App extends StatelessWidget {
-  final AuthenticationRepository authenticationRepository;
+  final AuthenticationRepository
+      authenticationRepository;
   final FirestoreRepository firestoreRepository;
   final RealtimedbRepository realtimedbRepository;
 
@@ -54,21 +54,28 @@ final class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (_) => authenticationRepository),
-        RepositoryProvider(create: (_) => FirestoreRepository()),
-        RepositoryProvider(create: (_) => MqttRepository()),
-        RepositoryProvider(create: (_) => RealtimedbRepository()),
+        RepositoryProvider(
+            create: (_) => authenticationRepository),
+        RepositoryProvider(
+            create: (_) => FirestoreRepository()),
+        RepositoryProvider(
+            create: (_) => MqttRepository()),
+        RepositoryProvider(
+            create: (_) => RealtimedbRepository()),
       ],
       child: BlocProvider(
-        create: (context) => LoginBloc(authenticationRepository),
+        create: (context) =>
+            LoginBloc(authenticationRepository),
         child: MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'Monitoring Hidroponik',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+            colorScheme: ColorScheme.fromSeed(
+                seedColor: Colors.green),
             useMaterial3: true,
           ),
-          routerConfig: getRouterConfig(authenticationRepository),
+          routerConfig: getRouterConfig(
+              authenticationRepository),
         ),
       ),
     );
@@ -79,17 +86,20 @@ getRouterConfig(authenticationRepository) {
   return GoRouter(
     initialLocation: '/home',
     // debugLogDiagnostics: true,
-    errorBuilder: (context, state) => ErrorScreen(error: state.error),
+    errorBuilder: (context, state) =>
+        ErrorScreen(error: state.error),
     routes: [
       GoRoute(
         path: '/',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) =>
+            const LoginScreen(),
       ),
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const LayoutScreen(),
+        builder: (context, state) =>
+            const LayoutScreen(),
       ),
       GoRoute(
         path: '/:node/:page',
@@ -102,7 +112,8 @@ getRouterConfig(authenticationRepository) {
       GoRoute(
         path: '/history',
         name: 'history',
-        builder: (context, state) => const HistoryScreen(),
+        builder: (context, state) =>
+            const HistoryScreen(),
       ),
       GoRoute(
         path: '/history/:node/:docid',
@@ -121,7 +132,6 @@ getRouterConfig(authenticationRepository) {
           authenticationRepository.user != null) {
         return '/home';
       }
-
       return null;
     },
   );

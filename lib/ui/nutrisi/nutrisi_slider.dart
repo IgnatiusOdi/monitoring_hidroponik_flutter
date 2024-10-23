@@ -7,10 +7,12 @@ class NutrisiSlider extends StatefulWidget {
   const NutrisiSlider({super.key, required this.node});
 
   @override
-  State<NutrisiSlider> createState() => _NutrisiSliderState();
+  State<NutrisiSlider> createState() =>
+      _NutrisiSliderState();
 }
 
-class _NutrisiSliderState extends State<NutrisiSlider> {
+class _NutrisiSliderState
+    extends State<NutrisiSlider> {
   double _value = 600;
 
   @override
@@ -20,7 +22,8 @@ class _NutrisiSliderState extends State<NutrisiSlider> {
   }
 
   void _loadValue() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs =
+        await SharedPreferences.getInstance();
     final value = prefs.getDouble(widget.node);
     if (value != null) {
       setState(() {
@@ -43,7 +46,8 @@ class _NutrisiSliderState extends State<NutrisiSlider> {
         setState(() {
           _value = value;
         });
-        final prefs = await SharedPreferences.getInstance();
+        final prefs =
+            await SharedPreferences.getInstance();
         await prefs.setDouble(widget.node, value);
       },
     );

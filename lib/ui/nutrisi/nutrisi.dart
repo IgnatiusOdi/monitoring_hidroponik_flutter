@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../models/data.dart';
 import '../../repository/mqtt_repository.dart';
 import '../../repository/realtimedb_repository.dart';
@@ -20,7 +19,6 @@ class _NutrisiState extends State<Nutrisi> {
   Data? data;
   int? diff;
   int? ppm;
-
   bool loading = false;
   bool success = false;
 
@@ -32,12 +30,15 @@ class _NutrisiState extends State<Nutrisi> {
       if (snapshot.snapshot.value != null) {
         if (!mounted) return;
         setState(() {
-          data =
-              Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
-          data!.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
-
-          diff = DateTime.now().difference(data!.penambahanPPM!).inDays;
-          ppm = int.parse(data!.data!.last.value!.split(',')[1]);
+          data = Data.fromJson(snapshot.snapshot.value
+              as Map<dynamic, dynamic>);
+          data!.data!.sort((a, b) =>
+              a.tanggal!.compareTo(b.tanggal!));
+          diff = DateTime.now()
+              .difference(data!.penambahanPPM!)
+              .inDays;
+          ppm = int.parse(
+              data!.data!.last.value!.split(',')[1]);
         });
       }
     });
@@ -59,21 +60,29 @@ class _NutrisiState extends State<Nutrisi> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double width = MediaQuery.of(context).size.width;
-    final mqttRepository = context.read<MqttRepository>();
-
+    final double width =
+        MediaQuery.of(context).size.width;
+    final mqttRepository =
+        context.read<MqttRepository>();
     return data != null
         ? Column(
             children: [
-              Text(widget.node, style: const TextStyle(fontSize: 20)),
+              Text(widget.node,
+                  style:
+                      const TextStyle(fontSize: 20)),
               const Text(
                 r'Nutrisi terakhir ditambahkan :',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
               ),
               Text(
-                diff == 0 ? 'HARI INI' : '$diff HARI yang lalu',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                diff == 0
+                    ? 'HARI INI'
+                    : '$diff HARI yang lalu',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -81,10 +90,15 @@ class _NutrisiState extends State<Nutrisi> {
                     loading = true;
                     success = false;
                   });
-                  final prefs = await SharedPreferences.getInstance();
+                  final prefs = await SharedPreferences
+                      .getInstance();
                   await mqttRepository
-                      .publish(widget.node,
-                          prefs.getDouble(widget.node)!.round().toString())
+                      .publish(
+                          widget.node,
+                          prefs
+                              .getDouble(widget.node)!
+                              .round()
+                              .toString())
                       .then((_) => setState(() {
                             loading = false;
                             success = true;
@@ -96,24 +110,34 @@ class _NutrisiState extends State<Nutrisi> {
                       ? const EdgeInsets.all(60)
                       : const EdgeInsets.all(40),
                   backgroundColor: theme.primaryColor,
-                  foregroundColor: theme.colorScheme.onPrimary,
+                  foregroundColor:
+                      theme.colorScheme.onPrimary,
                 ),
                 child: const Text(
                   'TAMBAH\nNUTRISI',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
                 ),
               ),
               Text('Kadar PPM saat ini : $ppm',
-                  style: const TextStyle(fontSize: 24)),
-              loading ? const CircularProgressIndicator() : Container(),
+                  style:
+                      const TextStyle(fontSize: 24)),
+              loading
+                  ? const CircularProgressIndicator()
+                  : Container(),
               success
-                  ? Text('Berhasil mengirimkan perintah',
-                      style: TextStyle(fontSize: 20, color: theme.primaryColor))
+                  ? Text(
+                      'Berhasil mengirimkan perintah',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: theme.primaryColor))
                   : Container(),
               NutrisiSlider(node: widget.node),
             ],
           )
-        : const Center(child: CircularProgressIndicator());
+        : const Center(
+            child: CircularProgressIndicator());
   }
 }

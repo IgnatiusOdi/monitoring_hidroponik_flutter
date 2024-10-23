@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import '../bloc/login/login_bloc.dart';
 import 'home/home_screen.dart';
 import 'nutrisi/nutrisi_screen.dart';
@@ -12,12 +11,12 @@ class LayoutScreen extends StatefulWidget {
   const LayoutScreen({super.key});
 
   @override
-  State<LayoutScreen> createState() => _LayoutScreenState();
+  State<LayoutScreen> createState() =>
+      _LayoutScreenState();
 }
 
 class _LayoutScreenState extends State<LayoutScreen> {
   int _selectedIndex = 0;
-
   late final List<Widget> _pages = [
     const HomeScreen(),
     const NutrisiScreen(),
@@ -34,7 +33,6 @@ class _LayoutScreenState extends State<LayoutScreen> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (!state.status) {
@@ -60,7 +58,9 @@ class _LayoutScreenState extends State<LayoutScreen> {
               color: theme.colorScheme.surface,
               icon: const Icon(Icons.logout),
               onPressed: () {
-                context.read<LoginBloc>().add(SignOut());
+                context
+                    .read<LoginBloc>()
+                    .add(SignOut());
               },
             )
           ],
@@ -71,7 +71,8 @@ class _LayoutScreenState extends State<LayoutScreen> {
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           selectedItemColor: theme.primaryColor,
-          unselectedItemColor: theme.colorScheme.secondary,
+          unselectedItemColor:
+              theme.colorScheme.secondary,
           type: BottomNavigationBarType.shifting,
           items: const [
             BottomNavigationBarItem(

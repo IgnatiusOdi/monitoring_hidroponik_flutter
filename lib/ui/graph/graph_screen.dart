@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'graph.dart';
 
 class GraphScreen extends StatelessWidget {
@@ -21,7 +20,6 @@ class GraphScreen extends StatelessWidget {
         : page == 'ppm'
             ? 'Kadar PPM $node'
             : 'Suhu Air $node';
-
     return Scaffold(
       appBar: AppBar(
           leading: IconButton(

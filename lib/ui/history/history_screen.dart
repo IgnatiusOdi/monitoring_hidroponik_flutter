@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'history.dart';
 
 class HistoryScreen extends StatelessWidget {
@@ -9,7 +8,6 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
           leading: IconButton(
@@ -25,12 +23,15 @@ class HistoryScreen extends StatelessWidget {
         padding: EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
-              Text('node1', style: TextStyle(fontSize: 20)),
+              Text('node1',
+                  style: TextStyle(fontSize: 20)),
               History(node: r'node1'),
               Divider(),
-              Text('node2', style: TextStyle(fontSize: 20)),
+              Text('node2',
+                  style: TextStyle(fontSize: 20)),
               History(node: r'node2'),
             ],
           ),

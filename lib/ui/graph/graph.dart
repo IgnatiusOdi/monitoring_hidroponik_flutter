@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
 import '../../models/data.dart';
 import '../../models/graph_data.dart';
 import '../../repository/realtimedb_repository.dart';
@@ -13,7 +12,6 @@ class Graph extends StatefulWidget {
 
   // ph, ppm, suhu (\u00B0C)
   final String page;
-
   final String node;
 
   const Graph({
@@ -32,11 +30,12 @@ class _GraphState extends State<Graph> {
   String? ph;
   String? ppm;
   String? suhu;
-
   late ZoomPanBehavior _zoomPanBehavior;
   late TrackballBehavior _trackballBehavior;
-  final tanggalAwalController = TextEditingController();
-  final tanggalAkhirController = TextEditingController();
+  final tanggalAwalController =
+      TextEditingController();
+  final tanggalAkhirController =
+      TextEditingController();
 
   void getData() {
     context
@@ -46,10 +45,10 @@ class _GraphState extends State<Graph> {
       if (snapshot.snapshot.value != null) {
         if (!mounted) return;
         setState(() {
-          data =
-              Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
-          data!.data!.sort((a, b) => a.tanggal!.compareTo(b.tanggal!));
-
+          data = Data.fromJson(snapshot.snapshot.value
+              as Map<dynamic, dynamic>);
+          data!.data!.sort((a, b) =>
+              a.tanggal!.compareTo(b.tanggal!));
           ph = data!.data!.last.value!.split(',')[0];
           ppm = data!.data!.last.value!.split(',')[1];
           suhu = data!.data!.last.value!.split(',')[2];
@@ -93,17 +92,21 @@ class _GraphState extends State<Graph> {
   Widget build(BuildContext context) {
     return data != null
         ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment:
+                MainAxisAlignment.center,
             children: [
-              Text(widget.title, style: const TextStyle(fontSize: 24)),
+              Text(widget.title,
+                  style:
+                      const TextStyle(fontSize: 24)),
               Text(
                 widget.page == 'ph'
                     ? ph!
                     : widget.page == 'ppm'
                         ? ppm!
                         : '$suhu \u00B0C',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32),
               ),
               const Divider(),
               TextField(
@@ -120,15 +123,20 @@ class _GraphState extends State<Graph> {
                       firstDate: DateTime(2024),
                       lastDate: DateTime.now(),
                     ).then(
-                      (value) => setState(() => tanggalAwalController.text =
-                          DateFormat('yyyy-MM-dd').format(value!)),
+                      (value) => setState(() =>
+                          tanggalAwalController.text =
+                              DateFormat('yyyy-MM-dd')
+                                  .format(value!)),
                     );
                   }),
               tanggalAwalController.text.isNotEmpty
                   ? TextField(
-                      controller: tanggalAkhirController,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.calendar_today),
+                      controller:
+                          tanggalAkhirController,
+                      decoration:
+                          const InputDecoration(
+                        icon:
+                            Icon(Icons.calendar_today),
                         labelText: 'Tanggal Akhir',
                         hintText: 'yyyy-mm-dd',
                       ),
@@ -136,12 +144,19 @@ class _GraphState extends State<Graph> {
                       onTap: () {
                         showDatePicker(
                           context: context,
-                          firstDate: DateTime.parse(tanggalAwalController.text)
-                              .add(const Duration(days: 1)),
-                          lastDate: DateTime.now().add(const Duration(days: 1)),
+                          firstDate: DateTime.parse(
+                                  tanggalAwalController
+                                      .text)
+                              .add(const Duration(
+                                  days: 1)),
+                          lastDate: DateTime.now().add(
+                              const Duration(days: 1)),
                         ).then(
-                          (value) => setState(() => tanggalAkhirController
-                              .text = DateFormat('yyyy-MM-dd').format(value!)),
+                          (value) => setState(() =>
+                              tanggalAkhirController
+                                  .text = DateFormat(
+                                      'yyyy-MM-dd')
+                                  .format(value!)),
                         );
                       },
                     )
@@ -149,42 +164,67 @@ class _GraphState extends State<Graph> {
               const Divider(),
               SfCartesianChart(
                 primaryXAxis: const DateTimeAxis(),
-                title: ChartTitle(text: 'Grafik ${widget.title}'),
+                title: ChartTitle(
+                    text: 'Grafik ${widget.title}'),
                 zoomPanBehavior: _zoomPanBehavior,
                 trackballBehavior: _trackballBehavior,
-                series: <CartesianSeries<GraphData, dynamic>>[
+                series: <CartesianSeries<GraphData,
+                    dynamic>>[
                   FastLineSeries(
                     dataSource: data!.data!.where((e) {
-                      if (tanggalAwalController.text.isEmpty &&
-                          tanggalAkhirController.text.isEmpty) {
+                      if (tanggalAwalController
+                              .text.isEmpty &&
+                          tanggalAkhirController
+                              .text.isEmpty) {
                         return true;
                       }
-                      if (tanggalAkhirController.text.isEmpty) {
+                      if (tanggalAkhirController
+                          .text.isEmpty) {
                         return e.tanggal!.compareTo(
-                                DateTime.parse(tanggalAwalController.text)) >=
+                                DateTime.parse(
+                                    tanggalAwalController
+                                        .text)) >=
                             0;
                       }
                       return e.tanggal!.compareTo(
-                                  DateTime.parse(tanggalAwalController.text)) >=
+                                  DateTime.parse(
+                                      tanggalAwalController
+                                          .text)) >=
                               0 &&
-                          e.tanggal!.compareTo(DateTime.parse(
-                                  tanggalAkhirController.text)) <=
+                          e.tanggal!.compareTo(
+                                  DateTime.parse(
+                                      tanggalAkhirController
+                                          .text)) <=
                               0;
                     }).toList(),
-                    xValueMapper: (GraphData data, _) => data.tanggal,
-                    yValueMapper: (GraphData data, _) => widget.page == 'ph'
-                        ? double.parse(data.value!.split(',')[0])
-                        : widget.page == 'ppm'
-                            ? double.parse(data.value!.split(',')[1])
-                            : double.parse(data.value!.split(',')[2]),
-                    dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    markerSettings: const MarkerSettings(isVisible: true),
+                    xValueMapper:
+                        (GraphData data, _) =>
+                            data.tanggal,
+                    yValueMapper: (GraphData data,
+                            _) =>
+                        widget.page == 'ph'
+                            ? double.parse(data.value!
+                                .split(',')[0])
+                            : widget.page == 'ppm'
+                                ? double.parse(data
+                                    .value!
+                                    .split(',')[1])
+                                : double.parse(data
+                                    .value!
+                                    .split(',')[2]),
+                    dataLabelSettings:
+                        const DataLabelSettings(
+                            isVisible: true),
+                    markerSettings:
+                        const MarkerSettings(
+                            isVisible: true),
                     animationDuration: 0,
                   ),
                 ],
               ),
             ],
           )
-        : const Center(child: CircularProgressIndicator());
+        : const Center(
+            child: CircularProgressIndicator());
   }
 }

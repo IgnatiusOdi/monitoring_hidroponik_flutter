@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../repository/authentication_repository.dart';
 
 part 'login_event.dart';
@@ -7,9 +6,11 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthenticationRepository authenticationRepository;
+  final AuthenticationRepository
+      authenticationRepository;
 
-  LoginBloc(this.authenticationRepository) : super(LoginState()) {
+  LoginBloc(this.authenticationRepository)
+      : super(LoginState()) {
     on<EmailChangedEvent>((event, emit) {
       try {
         emit(state.copyWith(email: event.email));
@@ -17,7 +18,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(state.copyWith(error: e.toString()));
       }
     });
-
     on<PasswordChangedEvent>((event, emit) {
       try {
         emit(state.copyWith(password: event.password));
@@ -25,18 +25,18 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(state.copyWith(error: e.toString()));
       }
     });
-
     on<LoginEmailPassword>((event, emit) async {
       try {
         emit(state.copyWith(loading: true, error: ''));
-
-        if (state.email.isEmpty || state.password.isEmpty) {
+        if (state.email.isEmpty ||
+            state.password.isEmpty) {
           emit(state.copyWith(
-              loading: false, error: 'Email / Password kosong!'));
+              loading: false,
+              error: 'Email / Password kosong!'));
           return;
         }
-
-        await authenticationRepository.logInWithEmailAndPassword(
+        await authenticationRepository
+            .logInWithEmailAndPassword(
           email: state.email,
           password: state.password,
         );
@@ -47,10 +47,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           loading: false,
         ));
       } catch (e) {
-        emit(state.copyWith(loading: false, error: 'Email / Password salah!'));
+        emit(state.copyWith(
+            loading: false,
+            error: 'Email / Password salah!'));
       }
     });
-
     on<SignOut>((event, emit) async {
       try {
         await authenticationRepository.signOut();

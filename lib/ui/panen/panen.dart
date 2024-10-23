@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../models/data.dart';
 import '../../repository/realtimedb_repository.dart';
 
@@ -26,10 +25,14 @@ class _PanenState extends State<Panen> {
       if (snapshot.snapshot.value != null) {
         if (!mounted) return;
         setState(() {
-          data =
-              Data.fromJson(snapshot.snapshot.value as Map<dynamic, dynamic>);
-          diff1 = data!.tanaman!.panen1!.difference(DateTime.now()).inDays;
-          diff2 = data!.tanaman!.panen2!.difference(DateTime.now()).inDays;
+          data = Data.fromJson(snapshot.snapshot.value
+              as Map<dynamic, dynamic>);
+          diff1 = data!.tanaman!.panen1!
+              .difference(DateTime.now())
+              .inDays;
+          diff2 = data!.tanaman!.panen2!
+              .difference(DateTime.now())
+              .inDays;
         });
       }
     });
@@ -60,7 +63,9 @@ class _PanenState extends State<Panen> {
             ),
             child: Column(
               children: [
-                Text(widget.node, style: const TextStyle(fontSize: 20)),
+                Text(widget.node,
+                    style:
+                        const TextStyle(fontSize: 20)),
                 Text(
                   data!.tanaman!.jenis!,
                   style: const TextStyle(
@@ -69,20 +74,24 @@ class _PanenState extends State<Panen> {
                   ),
                 ),
                 if (diff2! <= 0)
-                  const Text('Siap Panen', style: TextStyle(fontSize: 24))
+                  const Text('Siap Panen',
+                      style: TextStyle(fontSize: 24))
                 else if (diff1! <= 0)
                   Text(
                     'Bisa Panen hingga $diff2 hari',
-                    style: const TextStyle(fontSize: 24),
+                    style:
+                        const TextStyle(fontSize: 24),
                   )
                 else
                   Text(
                     '$diff1 - $diff2 hari',
-                    style: const TextStyle(fontSize: 24),
+                    style:
+                        const TextStyle(fontSize: 24),
                   )
               ],
             ),
           )
-        : const Center(child: CircularProgressIndicator());
+        : const Center(
+            child: CircularProgressIndicator());
   }
 }

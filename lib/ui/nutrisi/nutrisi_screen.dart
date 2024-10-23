@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'nutrisi.dart';
 
 class NutrisiScreen extends StatelessWidget {
@@ -13,7 +12,8 @@ class NutrisiScreen extends StatelessWidget {
         child: Center(
           child: SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment:
+                  MainAxisAlignment.center,
               children: [
                 Nutrisi(node: r'node1'),
                 Divider(),
@@ -25,10 +25,12 @@ class NutrisiScreen extends StatelessWidget {
       ),
       floatingActionButton: IconButton(
         onPressed: () {},
-        tooltip: "Mohon ditunggu setelah melakukan tambah nutrisi",
+        tooltip:
+            "Mohon ditunggu setelah melakukan tambah nutrisi",
         icon: const Icon(Icons.info),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.endTop,
     );
   }
 }
