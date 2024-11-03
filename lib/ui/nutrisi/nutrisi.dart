@@ -21,6 +21,7 @@ class _NutrisiState extends State<Nutrisi> {
   int? ppm;
   bool loading = false;
   bool success = false;
+  bool error = false;
 
   void getData() {
     context
@@ -88,21 +89,33 @@ class _NutrisiState extends State<Nutrisi> {
                 onPressed: () async {
                   setState(() {
                     loading = true;
+                    error = false;
                     success = false;
                   });
                   final prefs = await SharedPreferences
                       .getInstance();
-                  await mqttRepository
-                      .publish(
-                          widget.node,
-                          prefs
-                              .getDouble(widget.node)!
-                              .round()
-                              .toString())
-                      .then((_) => setState(() {
-                            loading = false;
-                            success = true;
-                          }));
+                  if (ppm! <
+                      prefs
+                          .getDouble(widget.node)!
+                          .round()) {
+                    await mqttRepository
+                        .publish(
+                            widget.node,
+                            prefs
+                                .getDouble(
+                                    widget.node)!
+                                .round()
+                                .toString())
+                        .then((_) => setState(() {
+                              loading = false;
+                              success = true;
+                            }));
+                  } else {
+                    setState(() {
+                      loading = false;
+                      error = true;
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   shape: const CircleBorder(),
@@ -133,6 +146,13 @@ class _NutrisiState extends State<Nutrisi> {
                       style: TextStyle(
                           fontSize: 20,
                           color: theme.primaryColor))
+                  : Container(),
+              error
+                  ? const Text(
+                      'Kadar PPM sudah mencukupi',
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.redAccent))
                   : Container(),
               NutrisiSlider(node: widget.node),
             ],
