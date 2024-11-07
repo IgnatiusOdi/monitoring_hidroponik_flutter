@@ -25,8 +25,12 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   List<GraphData>? data;
-  late ZoomPanBehavior _zoomPanBehavior;
-  late TrackballBehavior _trackballBehavior;
+  late ZoomPanBehavior _zoomPanBehavior1;
+  late ZoomPanBehavior _zoomPanBehavior2;
+  late ZoomPanBehavior _zoomPanBehavior3;
+  late TrackballBehavior _trackballBehavior1;
+  late TrackballBehavior _trackballBehavior2;
+  late TrackballBehavior _trackballBehavior3;
   final tanggalAwalController =
       TextEditingController();
   final tanggalAkhirController =
@@ -62,13 +66,45 @@ class _DetailScreenState extends State<DetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getData();
     });
-    _zoomPanBehavior = ZoomPanBehavior(
+    _zoomPanBehavior1 = ZoomPanBehavior(
       enableMouseWheelZooming: true,
       enablePinching: true,
       zoomMode: ZoomMode.x,
       enablePanning: true,
     );
-    _trackballBehavior = TrackballBehavior(
+    _zoomPanBehavior2 = ZoomPanBehavior(
+      enableMouseWheelZooming: true,
+      enablePinching: true,
+      zoomMode: ZoomMode.x,
+      enablePanning: true,
+    );
+    _zoomPanBehavior3 = ZoomPanBehavior(
+      enableMouseWheelZooming: true,
+      enablePinching: true,
+      zoomMode: ZoomMode.x,
+      enablePanning: true,
+    );
+    _trackballBehavior1 = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      lineType: TrackballLineType.vertical,
+      tooltipSettings: const InteractiveTooltip(
+        enable: true,
+        color: Colors.green,
+        format: 'point.x',
+      ),
+    );
+    _trackballBehavior2 = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      lineType: TrackballLineType.vertical,
+      tooltipSettings: const InteractiveTooltip(
+        enable: true,
+        color: Colors.green,
+        format: 'point.x',
+      ),
+    );
+    _trackballBehavior3 = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
       lineType: TrackballLineType.vertical,
@@ -98,7 +134,8 @@ class _DetailScreenState extends State<DetailScreen> {
             context.goNamed('history');
           },
         ),
-        title: const Text('Detail History'),
+        title:
+            Text('Detail History ${widget.tanggal}'),
         foregroundColor: theme.colorScheme.surface,
         backgroundColor: theme.primaryColor,
       ),
@@ -178,66 +215,16 @@ class _DetailScreenState extends State<DetailScreen> {
                       SfCartesianChart(
                         primaryXAxis:
                             const DateTimeAxis(),
-                        title: ChartTitle(
-                            text:
-                                'Grafik ${widget.tanggal}'),
+                        title: const ChartTitle(
+                            text: 'Grafik PPM'),
                         zoomPanBehavior:
-                            _zoomPanBehavior,
+                            _zoomPanBehavior1,
                         trackballBehavior:
-                            _trackballBehavior,
-                        legend: const Legend(
-                          isVisible: true,
-                          position:
-                              LegendPosition.bottom,
-                        ),
+                            _trackballBehavior1,
+                        margin:
+                            const EdgeInsets.all(20),
                         series: <CartesianSeries<
                             GraphData, dynamic>>[
-                          FastLineSeries(
-                            name: 'pH',
-                            dataSource:
-                                data!.where((e) {
-                              if (tanggalAwalController
-                                      .text.isEmpty &&
-                                  tanggalAkhirController
-                                      .text.isEmpty) {
-                                return true;
-                              }
-                              if (tanggalAkhirController
-                                  .text.isEmpty) {
-                                return e.tanggal!.compareTo(
-                                        DateTime.parse(
-                                            tanggalAwalController
-                                                .text)) >=
-                                    0;
-                              }
-                              return e.tanggal!.compareTo(
-                                          DateTime.parse(
-                                              tanggalAwalController
-                                                  .text)) >=
-                                      0 &&
-                                  e.tanggal!.compareTo(
-                                          DateTime.parse(
-                                              tanggalAkhirController
-                                                  .text)) <=
-                                      0;
-                            }).toList(),
-                            xValueMapper:
-                                (GraphData data, _) =>
-                                    data.tanggal,
-                            yValueMapper:
-                                (GraphData data, _) =>
-                                    double.parse(data
-                                        .value!
-                                        .split(
-                                            ",")[0]),
-                            dataLabelSettings:
-                                const DataLabelSettings(
-                                    isVisible: true),
-                            markerSettings:
-                                const MarkerSettings(
-                                    isVisible: true),
-                            animationDuration: 0,
-                          ),
                           FastLineSeries(
                             name: 'ppm',
                             dataSource:
@@ -284,6 +271,21 @@ class _DetailScreenState extends State<DetailScreen> {
                                     isVisible: true),
                             animationDuration: 0,
                           ),
+                        ],
+                      ),
+                      SfCartesianChart(
+                        primaryXAxis:
+                            const DateTimeAxis(),
+                        title: const ChartTitle(
+                            text: 'Grafik Suhu'),
+                        zoomPanBehavior:
+                            _zoomPanBehavior2,
+                        trackballBehavior:
+                            _trackballBehavior2,
+                        margin:
+                            const EdgeInsets.all(20),
+                        series: <CartesianSeries<
+                            GraphData, dynamic>>[
                           FastLineSeries(
                             name: 'suhu',
                             dataSource:
@@ -322,6 +324,67 @@ class _DetailScreenState extends State<DetailScreen> {
                                         .value!
                                         .split(
                                             ",")[2]),
+                            dataLabelSettings:
+                                const DataLabelSettings(
+                                    isVisible: true),
+                            markerSettings:
+                                const MarkerSettings(
+                                    isVisible: true),
+                            animationDuration: 0,
+                          ),
+                        ],
+                      ),
+                      SfCartesianChart(
+                        primaryXAxis:
+                            const DateTimeAxis(),
+                        title: const ChartTitle(
+                            text: 'Grafik pH'),
+                        zoomPanBehavior:
+                            _zoomPanBehavior3,
+                        trackballBehavior:
+                            _trackballBehavior3,
+                        margin:
+                            const EdgeInsets.all(20),
+                        series: <CartesianSeries<
+                            GraphData, dynamic>>[
+                          FastLineSeries(
+                            name: 'pH',
+                            dataSource:
+                                data!.where((e) {
+                              if (tanggalAwalController
+                                      .text.isEmpty &&
+                                  tanggalAkhirController
+                                      .text.isEmpty) {
+                                return true;
+                              }
+                              if (tanggalAkhirController
+                                  .text.isEmpty) {
+                                return e.tanggal!.compareTo(
+                                        DateTime.parse(
+                                            tanggalAwalController
+                                                .text)) >=
+                                    0;
+                              }
+                              return e.tanggal!.compareTo(
+                                          DateTime.parse(
+                                              tanggalAwalController
+                                                  .text)) >=
+                                      0 &&
+                                  e.tanggal!.compareTo(
+                                          DateTime.parse(
+                                              tanggalAkhirController
+                                                  .text)) <=
+                                      0;
+                            }).toList(),
+                            xValueMapper:
+                                (GraphData data, _) =>
+                                    data.tanggal,
+                            yValueMapper:
+                                (GraphData data, _) =>
+                                    double.parse(data
+                                        .value!
+                                        .split(
+                                            ",")[0]),
                             dataLabelSettings:
                                 const DataLabelSettings(
                                     isVisible: true),
